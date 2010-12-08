@@ -141,7 +141,7 @@ SUBROUTINE BHgrav_accel(p,invhp,rp,agravp,potp)
         call distance3(BHgrav(c)%r(1:NDIM),rp(1:NDIM),dr(1:NDIM),drsqd)
 #else
         dr(1:NDIM) = rp(1:NDIM) - BHgrav(c)%r(1:NDIM)
-        drsqd = dot_product(dr(1:NDIM),dr(1:NDIM)
+        drsqd = dot_product(dr(1:NDIM),dr(1:NDIM))
 #endif
 
         ! If distance between p and c is greater than min distance, and the 
