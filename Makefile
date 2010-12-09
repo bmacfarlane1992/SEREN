@@ -37,10 +37,10 @@ KERNEL                   = M4TC
 HFIND                    = NUMBER
 MINIMUM_H                = 0
 HYDRO                    = 1
-THERMAL                  = ISOTHERMAL
+THERMAL                  = RAD_WS
 SINK_POTENTIAL_WS        = 0
 AMBIENT_HEATING_WS       = 0
-SINK_HEATING_WS          = 0
+SINK_HEATING_WS          = HDISC_HEATING_3D_SINGLE
 FLUX_LIMITED_DIFFUSION   = 0
 IONIZING_RADIATION       = 0
 RIEMANN_SOLVER           = 0
@@ -61,7 +61,7 @@ REMOVE_OUTLIERS          = 0
 # ----------------------------------------------------------------------------
 # Sink and N-body options
 # ----------------------------------------------------------------------------
-SINKS                    = 0
+SINKS                    = SIMPLE
 SINK_RADIUS              = HMULT
 SINK_REMOVE_ANGMOM       = 0
 SINK_GRAVITY_ONLY        = 0
@@ -132,7 +132,7 @@ DFLAGS += -DDEBUG_DIAGNOSTICS
 #DFLAGS += -DDEBUG_MHD
 #DFLAGS += -DDEBUG_NBODYSETUP
 #DFLAGS += -DDEBUG_PARAMETERS
-#DFLAGS += -DDEBUG_PLOT_DATA
+DFLAGS += -DDEBUG_PLOT_DATA
 #DFLAGS += -DDEBUG_RAD
 #DFLAGS += -DDEBUG_REDUCE_TIMESTEP
 #DFLAGS += -DDEBUG_REMOVE_OUTLIERS
@@ -290,6 +290,8 @@ include makefiletail.mk
 #                                i.e. T ~ To*(R/Ro)^(-q), 
 #                                where R is the distance in disc midplane 
 #                                (To, Ro (in AU), Tinf set in params.dat)
+#                           HDISC_HEATING_3D_SINGLE = As HDISC_HEATING but 
+#                                uses 3D distance from single star.
 
 # FLUX_LIMITED_DIFFUSION  : Hybrid flux-limited diffusion method (0 or 1)
 

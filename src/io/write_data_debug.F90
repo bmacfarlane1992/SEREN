@@ -24,27 +24,27 @@ SUBROUTINE write_data_debug(out_file,rorigin)
   character(len=*), intent(in) :: out_file         ! Name of debug file
   real(kind=PR), intent(inout) :: rorigin(1:NDIM)  ! Origin for output
 
-  integer :: k                      ! Dimension counter
-  integer :: nelements              ! No. of elements in alldata
-  integer :: p                      ! Counter to loop over particles
-  real(kind=PR) :: alldata(1:100)   ! Array containing all data for output
+  integer :: k                            ! Dimension counter
+  integer :: nelements                    ! No. of elements in alldata
+  integer :: p                            ! Counter to loop over particles
+  real(kind=PR) :: alldata(1:100)         ! Array with all output data
 #if defined(SINKS)
-  integer :: s                      ! Sink counter
+  integer :: s                            ! Sink counter
 #endif
 #if defined(SINKS) || defined(DEBUG_FREEFALL) || defined(FREEFALL_TEST) || defined(PLUMMER_TEST)
-  character(len=256) :: debug_file  ! Debug filename
+  character(len=256) :: debug_file        ! Debug filename
 #endif
 #if defined(RAD_WS) && defined(DEBUG_RAD)
-  integer :: pmax                   ! id of particle with maximum density
-  real(kind=PR) :: rhomax           ! maximum density of all particles
+  integer :: prhomax                      ! id of particle with max. density
+  real(kind=PR) :: rhomax                 ! max. density of all particles
 #endif
 #if defined(DEBUG_FREEFALL) || defined(FREEFALL_TEST) || defined(PLUMMER_TEST)
   integer :: i                            ! ..
   integer :: iaux                         ! ..
   integer, allocatable :: rad_ids(:)      ! ..
-  real(kind=PR) :: dr(1:NDIM)
-  real(kind=PR) :: drsqd
-  real(kind=DP) :: mtot_temp                   ! ..
+  real(kind=PR) :: dr(1:NDIM)             ! ..
+  real(kind=PR) :: drsqd                  ! ..
+  real(kind=DP) :: mtot_temp              ! ..
   real(kind=DP) :: rmass(1:100)           ! ..
   real(kind=PR), allocatable:: radius(:)  ! ..
 #endif
@@ -58,15 +58,15 @@ SUBROUTINE write_data_debug(out_file,rorigin)
 
 ! Find id and position of densest particle
 #if defined(RAD_WS) && defined(DEBUG_RAD)
-  pmax = 1
+  prhomax = 1
   rhomax = SMALL_NUMBER
   do p=pgravitystart,ptot
      if (rho(p) > rhomax) then
-        pmax = p
+        prhomax = p
         rhomax = rho(p)
      end if
   end do
-  rorigin(1:NDIM) = parray(1:NDIM,pmax)
+  rorigin(1:NDIM) = parray(1:NDIM,prhomax)
 #endif
 
 ! Loop over all particles, and scan through all possible arrays that 
@@ -118,7 +118,6 @@ SUBROUTINE write_data_debug(out_file,rorigin)
 
         nelements = nelements + 1
         alldata(nelements) = sink(s)%h*real(rscale,PR)
-
 
         ! Now write all values to the file
         write(1,'(10E15.7)') (alldata(k),k=1,nelements)

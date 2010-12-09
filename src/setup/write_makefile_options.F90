@@ -213,6 +213,8 @@ SUBROUTINE write_makefile_options(unitno)
 
 #if defined(RAD_WS) && defined(HDISC_HEATING)
   write(unitno,'(A)') "SINK_HEATING_WS             = HDISC_HEATING"
+#elif defined(RAD_WS) && defined(HDISC_HEATING_3D_SINGLE)
+  write(unitno,'(A)') "SINK_HEATING_WS             = HDISC_HEATING_3D_SINGLE"
 #elif defined(RAD_WS) && defined(STAR_HEATING)
   write(unitno,'(A)') "SINK_HEATING_WS             = STAR_HEATING"
 #elif defined(RAD_WS) && defined(SIMPLE_STAR_HEATING)
