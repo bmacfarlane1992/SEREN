@@ -144,7 +144,7 @@ SUBROUTINE sph_output
 ! Write diagnostic data for various test options
 ! ----------------------------------------------------------------------------
 #if defined(RAD_WS) && defined(DEBUG_RAD)
-  call write_rad_test_data
+  call write_rad_ws_test_data
 #endif
 #if defined(BINARY_TEST)
   call write_binary_data

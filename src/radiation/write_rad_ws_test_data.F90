@@ -1,12 +1,12 @@
-! WRITE_RAD_TEST_DATA.F90
+! WRITE_RAD_WS_TEST_DATA.F90
 ! D. A. Hubber - 8/2/2009
-! Write out data relevant for
+! Write out data relevant for RAD_WS testing.
 ! ============================================================================
 
 #include "macros.h"
 
 ! ============================================================================
-SUBROUTINE write_rad_test_data
+SUBROUTINE write_rad_ws_test_data
   use particle_module, only : ptot
   use hydro_module
   use scaling_module
@@ -16,7 +16,7 @@ SUBROUTINE write_rad_test_data
   use time_module, only : nsteps, time
   implicit none
 
-#ifdef DEBUG_RAD
+#if defined(DEBUG_RAD)
   character(len=30) :: out_file    ! output file name
   integer :: p                     ! Particle counter
   integer :: pmax                  ! Id of most dense particle
@@ -26,7 +26,7 @@ SUBROUTINE write_rad_test_data
   real(kind=PR) :: taumax          ! Optical depth of most dense particle
   real(kind=PR) :: Tmax            ! Temperature of most dense particle
 
-  debug2("Writing data for polytropic cooling test [write_rad_test_data.F90]")
+  debug2("Writing data for polytropic cooling test [write_rad_ws_test_data.F90]")
 
 ! Find most dense particle and record attributes
   pmax   = 1
@@ -62,5 +62,5 @@ SUBROUTINE write_rad_test_data
 #endif
 
   return
-END SUBROUTINE write_rad_test_data
+END SUBROUTINE write_rad_ws_test_data
 

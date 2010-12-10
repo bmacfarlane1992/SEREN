@@ -85,7 +85,7 @@ SUBROUTINE sph_integrate
 
 ! Update radiative cooling terms
 #if defined(HYDRO) && defined(RAD_WS)
-  call rad_update
+  call rad_ws_update
 #endif
 
 ! Integration scheme to advance particle properties.

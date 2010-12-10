@@ -1,4 +1,4 @@
-! EOS.F90
+! SOLVE_IMPLICIT_COOLING_WS.F90
 ! D. Stamatellos & D. A. Hubber - 17/8/2009
 ! Contains subroutines and functions for use in new energy equation 
 ! and radiative transfer method (Stamatellos et al. 2007).
@@ -7,7 +7,7 @@
 #include "macros.h"
 
 ! ============================================================================
-SUBROUTINE eos(p)
+SUBROUTINE solve_implicit_cooling_ws(p)
   use interface_module, only : ambient_temp,ebalance,eosenergy,eosmu,&
        &find_idens,find_itemp,find_temp_from_energy,getkappa,getkappap
   use particle_module
@@ -72,6 +72,7 @@ SUBROUTINE eos(p)
   dudt_star_lost = 0.0_PR
 #endif
   rho_p = rho(p)
+  ZERO = .false.
 
 ! Calculate ambient temperature
   call ambient_temp(p,To)
@@ -132,8 +133,6 @@ SUBROUTINE eos(p)
 ! Do a binary chop to find equilibrium temperature
 ! ----------------------------------------------------------------------------
 
-! Set temp accuracy 
-  ZERO = .false.
 
 ! Calculate energy balance assuming current temperature as starting point
   call ebalance(balance,0.0_PR,To,temp(p),kappapT,kappaT,column2_p)
@@ -329,7 +328,7 @@ SUBROUTINE eos(p)
 #endif
 
   return
-END SUBROUTINE eos
+END SUBROUTINE solve_implicit_cooling_ws
 
 
 

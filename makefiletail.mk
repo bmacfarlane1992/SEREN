@@ -90,7 +90,7 @@ SETUP_OBJ += paramstore.o read_parameters.o read_arguments.o sanitycheck.o
 SETUP_OBJ += seren_setup.o types.o units.o write_makefile_options.o
 SETUP_OBJ += write_column_info.o
 IO_OBJ += read_data.o write_data.o
-IO_OBJ += write_rad_test_data.o
+IO_OBJ += write_rad_ws_test_data.o
 IC_OBJ = ic_subroutines.o velfield.o
 GENERIC_OBJ += allocate_memory.o clean_up.o COM.o distance3.o distance3_dp.o
 GENERIC_OBJ += heapsort.o insertion_sort.o remove_from_list.o reorder_array.o
@@ -513,7 +513,7 @@ CFLAGS += -DENTROPIC_FUNCTION -DINTERNAL_ENERGY
 
 else ifeq ($(THERMAL),RAD_WS)
 CFLAGS += -DRAD_WS -DRAD -DINTERNAL_ENERGY -DU_IMPLICIT_SOLVER
-SPH_OBJ += rad_update.o eos.o readeos.o ambienttemp.o
+SPH_OBJ += rad_ws_update.o solve_implicit_cooling_ws.o readeos.o ambienttemp.o
 ifeq ($(FLUX_LIMITED_DIFFUSION),1)
 CFLAGS += -DDIFFUSION
 SPH_OBJ += conductivity.o diffusion.o

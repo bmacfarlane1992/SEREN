@@ -1,4 +1,4 @@
-! RAD_UPDATE.F90
+! RAD_WS_UPDATE.F90
 ! D. A. Hubber - 14/7/2008
 ! Update radiation transport quantities.
 ! (Ref : Stamatellos et al. 2007; Forgan et al. 2009)
@@ -7,7 +7,7 @@
 #include "macros.h"
 
 ! ============================================================================
-SUBROUTINE rad_update
+SUBROUTINE rad_ws_update
   use interface_module
   use particle_module
   use hydro_module
@@ -29,7 +29,7 @@ SUBROUTINE rad_update
   integer :: chunksize                ! Data packet size for dynamic OpenMP
 #endif
 
-  debug2("Updating radiation transport quantities [rad_update.F90]")
+  debug2("Updating radiation transport quantities [rad_ws_update.F90]")
   debug_timing("RAD_WS")
 
 ! For multiple particle timesteps, first make a list of all hydro SPH 
@@ -83,7 +83,7 @@ SUBROUTINE rad_update
 #if defined(DIFFUSION)
         call diffusion(p,dt)
 #endif
-        call eos(p)
+        call solve_implicit_cooling_ws(p)
      end do
      !$OMP END PARALLEL DO
   end if
@@ -133,4 +133,4 @@ SUBROUTINE rad_update
   deallocate(acclist)
 
   return
-END SUBROUTINE rad_update
+END SUBROUTINE rad_ws_update
