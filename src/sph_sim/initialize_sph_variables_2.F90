@@ -9,7 +9,7 @@
 
 ! ============================================================================
 SUBROUTINE initialize_sph_variables_2
-  use interface_module, only : eos
+  use interface_module, only : solve_implicit_cooling_ws
   use particle_module
   use hydro_module
   use scaling_module
@@ -48,7 +48,7 @@ SUBROUTINE initialize_sph_variables_2
 #else
      column2(p) = (fcolumn**2)*sphgpot(p)*rho(p)
 #endif
-     call eos(p)
+     call solve_implicit_cooling_ws(p)
   end do
 #endif
 

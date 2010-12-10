@@ -1,12 +1,13 @@
-! READEOS.F90
+! READ_COOLING_TABLE_WS.F90
 ! D. Stamatellos - 3/1/2007
-! Reads the EOS table (dens, temp, energy, mu)
+! Reads the table (dens, temp, energy, mu) required to calculate cooling 
+! terms in the radiative cooling routine.
 ! ============================================================================
 
 #include "macros.h"
 
 ! ============================================================================
-SUBROUTINE read_eos
+SUBROUTINE read_cooling_table_ws
   use hydro_module
   use Eos_module
   use scaling_module
@@ -114,4 +115,4 @@ write(*,*) "SPIEGEL_TEST: multiplying opacities by 2.952e6*10**(-0.2*ptemp_q)(de
   btemp = (real(dim_temp,PR) - 1.0_PR) / (log10(tempmax/tempmin))
   
   return
-END SUBROUTINE read_eos
+END SUBROUTINE read_cooling_table_ws

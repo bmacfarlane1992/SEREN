@@ -1,6 +1,8 @@
 ! INTERFACE.F90
 ! D. A. Hubber - 6/9/2010
-! Interfaces for all subroutines with an argument list.
+! Interfaces for all subroutines with an argument list.  All subroutines 
+! without arguments are excluded (but perhaps should be included in the 
+! future for safety).
 ! ============================================================================
 
 #include "macros.h"
@@ -290,10 +292,10 @@ MODULE interface_module
        real(kind=PR), intent(out) :: mac
      END SUBROUTINE eigenvalue_mac
 
-     SUBROUTINE eos(p)
+     SUBROUTINE solve_implicit_cooling_ws(p)
        use definitions
        integer, intent(in) :: p
-     END SUBROUTINE eos
+     END SUBROUTINE solve_implicit_cooling_ws
 
      FUNCTION eosmu(dens,temp,idens,itemp)
        !DEC$ ATTRIBUTES FORCEINLINE :: eosmu

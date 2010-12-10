@@ -19,7 +19,6 @@ SUBROUTINE write_rad_ws_test_data
 #if defined(DEBUG_RAD)
   character(len=30) :: out_file    ! output file name
   integer :: p                     ! Particle counter
-  integer :: pmax                  ! Id of most dense particle
   real(kind=PR) :: kappamax        ! kappa of most dense particle
   real(kind=PR) :: radmax          ! Radial distance of most dense particle
   real(kind=PR) :: rhomax          ! Maximum density
@@ -29,11 +28,9 @@ SUBROUTINE write_rad_ws_test_data
   debug2("Writing data for polytropic cooling test [write_rad_ws_test_data.F90]")
 
 ! Find most dense particle and record attributes
-  pmax   = 1
   rhomax = 0.0_PR
   do p=pgravitystart,ptot
      if (rho(p) > rhomax) then
-        pmax     = p
         rhomax   = rho(p)
         Tmax     = temp(p)
         kappamax = rad_info(2,p)

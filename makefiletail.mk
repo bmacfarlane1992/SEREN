@@ -513,7 +513,8 @@ CFLAGS += -DENTROPIC_FUNCTION -DINTERNAL_ENERGY
 
 else ifeq ($(THERMAL),RAD_WS)
 CFLAGS += -DRAD_WS -DRAD -DINTERNAL_ENERGY -DU_IMPLICIT_SOLVER
-SPH_OBJ += rad_ws_update.o solve_implicit_cooling_ws.o readeos.o ambienttemp.o
+SPH_OBJ += rad_ws_update.o solve_implicit_cooling_ws.o 
+SPH_OBJ += read_cooling_table_ws.o ambienttemp.o
 ifeq ($(FLUX_LIMITED_DIFFUSION),1)
 CFLAGS += -DDIFFUSION
 SPH_OBJ += conductivity.o diffusion.o

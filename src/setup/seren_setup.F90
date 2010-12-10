@@ -51,7 +51,7 @@ SUBROUTINE seren_setup
 
 ! Read in opacity tables for radiation transport
 #if defined(HYDRO) && defined(GRAVITY) && defined(RAD_WS)
-  call read_eos
+  call read_cooling_table_ws
 #endif
 
 ! Create Ewald correction table
