@@ -12,8 +12,8 @@ PROFILE                  = 0
 DEBUG                    = 1
 NDIM                     = 3
 PRECISION                = SINGLE
-INFILE_FORMAT            = ALL
-OUTFILE_FORMAT           = ALL
+INFILE_FORMAT            = SEREN
+OUTFILE_FORMAT           = SEREN
 PERIODIC                 = 0
 X_BOUNDARY               = 0
 Y_BOUNDARY               = 0
@@ -31,16 +31,16 @@ NBODY_SIMULATION         = 0
 # ----------------------------------------------------------------------------
 # SPH simulation options
 # ----------------------------------------------------------------------------
-SPH                      = STANDARD
+SPH                      = GRAD_H_SPH
 SPH_INTEGRATION          = LFKDK
 KERNEL                   = M4TC
 HFIND                    = NUMBER
 MINIMUM_H                = 0
 HYDRO                    = 1
-THERMAL                  = RAD_WS
+THERMAL                  = ENERGY_EQN
 SINK_POTENTIAL_WS        = 0
 AMBIENT_HEATING_WS       = 0
-SINK_HEATING_WS          = HDISC_HEATING_3D_SINGLE
+SINK_HEATING_WS          = 0
 FLUX_LIMITED_DIFFUSION   = 0
 IONIZING_RADIATION       = 0
 RIEMANN_SOLVER           = 0
@@ -53,15 +53,15 @@ EXTERNAL_PRESSURE        = 0
 MHD                      = 0
 INDUCTION_EQN            = 0
 RESISTIVITY              = 0
-EXTERNAL_FORCE           = 0
-GRAVITY                  = KS
+EXTERNAL_FORCE           = NFW1996
+GRAVITY                  = 0
 EWALD                    = 0
 REMOVE_OUTLIERS          = 0
 
 # ----------------------------------------------------------------------------
 # Sink and N-body options
 # ----------------------------------------------------------------------------
-SINKS                    = SIMPLE
+SINKS                    = 0
 SINK_RADIUS              = HMULT
 SINK_REMOVE_ANGMOM       = 0
 SINK_GRAVITY_ONLY        = 0
@@ -82,11 +82,11 @@ CELL_WALK                = 0
 # ----------------------------------------------------------------------------
 SORT                     = INSERTION
 TIMESTEP                 = RESTRICTED
-CHECK_NEIB_TIMESTEP      = 1
+CHECK_NEIB_TIMESTEP      = 2
 SIGNAL_VELOCITY_DT       = 0
 NEIGHBOURLISTS           = 1
 TIMING_CODE              = 1
-DIMENSIONLESS            = 0
+DIMENSIONLESS            = 1
 TEST                     = 0
 
 # ----------------------------------------------------------------------------
@@ -117,6 +117,7 @@ DFLAGS += -DDEBUG_DIAGNOSTICS
 #DFLAGS += -DDEBUG_GATHER_NEIB
 #DFLAGS += -DDEBUG_GET_NEIB
 #DFLAGS += -DDEBUG_GRAD_H_SPH
+#DFLAGS += -DDEBUG_GRID_RESULTS
 #DFLAGS += -DDEBUG_HEAPSORT
 #DFLAGS += -DDEBUG_HERMITE4
 #DFLAGS += -DDEBUG_H_GATHER

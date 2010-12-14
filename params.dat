@@ -6,11 +6,11 @@ Contains all input parameters to perform a simulation using Seren.
 ==============================================================================
 File parameters
 ==============================================================================
-Run identification tag                    : run_id = BBSIT1
+Run identification tag                    : run_id = KHI10-M4-PRICE2008
 Run directory                             : run_dir = .
-Initial conditions file                   : in_file = 16000_SIT.dat
-Input file format                         : in_file_form = df
-Output file format                        : out_file_form = df
+Initial conditions file                   : in_file = ICKHI10-M4.sf.dat
+Input file format                         : in_file_form = sf
+Output file format                        : out_file_form = su
 
 ==============================================================================
 Misc. parameters
@@ -23,14 +23,14 @@ Particle tracking id                      : ptrack = 10000
 ==============================================================================
 Simulation time parameters
 ==============================================================================
-SPH run time                              : sph_endtime = 1.0
+SPH run time                              : sph_endtime = 2.12
 N-body/SPH run time                       : nbody_sph_endtime = 10.0
 N-body run time                           : nbody_endtime = 10.0
 
-Time of first output snapshot             : firstsnap = 0.01
-Snapshot time interval                    : snaptime = 0.002
-Temp. snapshot integer time interval      : ntempstep = 128
-Diag. output integer time interval        : ndiagstep = 128
+Time of first output snapshot             : firstsnap = 0.106
+Snapshot time interval                    : snaptime = 0.106
+Temp. snapshot integer time interval      : ntempstep = 512
+Diag. output integer time interval        : ndiagstep = 256
 Sink output integer time interval         : nsinkstep = 32
 Snapshot integer time interval            : nsnapstep = 10000000
 
@@ -40,7 +40,7 @@ Sink timestep multiplier                  : sink_mult = 0.6
 N-body timestep multiplier                : nbody_timemult = 0.1
 
 No. of quantised timestep levels          : nlevels = 7
-Fixed (maximum) timestep                  : dt_fixed = 0.002
+Fixed (maximum) timestep                  : dt_fixed = 0.106
 
 ==============================================================================
 Unit parameters
@@ -71,12 +71,12 @@ Mass scaling factor                       : mscale     = 1.0
 ==============================================================================
 Periodic parameters
 ==============================================================================
-Minimum x-extent of periodic box          : periodic_min(1) = -4.0
-Maximum x-extent of periodic box          : periodic_max(1) = 4.0
-Minimum y-extent of periodic box          : periodic_min(2) = 0.0
-Maximum y-extent of periodic box          : periodic_max(2) = 0.1
-Minimum z-extent of periodic box          : periodic_min(3) = 0.0
-Maximum z-extent of periodic box          : periodic_max(3) = 0.1
+Minimum x-extent of periodic box          : periodic_min(1) = -0.5
+Maximum x-extent of periodic box          : periodic_max(1) = 0.5
+Minimum y-extent of periodic box          : periodic_min(2) = -0.5
+Maximum y-extent of periodic box          : periodic_max(2) = 0.5
+Minimum z-extent of periodic box          : periodic_min(3) = -0.5
+Maximum z-extent of periodic box          : periodic_max(3) = 0.5
 Radius of spherical mirror                : rspheremax = 10.0
 Origin of spherical mirror                : psphere = 0
 (0 - origin; < 0 sink; > 0 SPH particle)
@@ -94,7 +94,7 @@ Thermal parameters
 ==============================================================================
 Isothermal temperature of gas (Kelvin)    : isotemp = 10.0
 Adiabatic density in barotropic EOS       : rhobary = 1.0e-14
-Ratio of specific heats                   : gamma = 1.4
+Ratio of specific heats                   : gamma = 1.6666666
 Mean gas particle mass                    : mu_bar = 1.0
 Polytropic constant                       : Kpoly = 0.4246
 External pressure                         : Pext = 0.0
@@ -102,8 +102,8 @@ External pressure                         : Pext = 0.0
 ==============================================================================
 Artificial viscosity parameters
 ==============================================================================
-Artificial viscosity alpha term           : alpha = 1.0
-Artificial viscosity beta term            : beta = 2.0
+Artificial viscosity alpha term           : alpha = 0.1
+Artificial viscosity beta term            : beta = 0.2
 Minimum value of alpha for time-dependent : alpha_min = 0.1
 artificial viscosity
 

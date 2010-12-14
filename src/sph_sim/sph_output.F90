@@ -106,6 +106,11 @@ SUBROUTINE sph_output
           &//".debug"//trim(adjustl(file_ext))
      call write_data_debug(out_debug,rzero(1:NDIM))
 #endif
+#if defined(DEBUG_GRID_RESULTS)
+     out_debug = trim(adjustl(run_dir))//trim(adjustl(run_id))&
+          &//".grid"//trim(adjustl(file_ext))
+     call write_data_grid_results(out_debug)
+#endif
 #if defined(DEBUG_RSPH_OUTPUT)
      call write_data_RSPH
 #endif

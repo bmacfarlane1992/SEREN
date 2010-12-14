@@ -21,7 +21,7 @@ SUBROUTINE all_sph(p)
   integer, intent(in) :: p              ! id of current particle
 
   integer :: i                          ! auxilary neighbour counter 
-  integer :: kern                     ! kernel table element for p
+  integer :: kern                       ! kernel table element for p
   integer :: pp                         ! neighbouring particles (p')
   integer :: pp_numb                    ! number of neighbours 
   integer :: pp_templist(1:LISTSIZE)    ! temp. list of neighbours
@@ -38,7 +38,7 @@ SUBROUTINE all_sph(p)
   real(kind=PR) :: mpp                  ! mass of neighbour pp
   real(kind=PR) :: rhotemp              ! local value of density
   real(kind=PR) :: rp(1:NDIM)           ! position of particle p
-  real(kind=PR) :: skern              ! 0.5 * (r/h) * KERNTOT for p
+  real(kind=PR) :: skern                ! 0.5 * (r/h) * KERNTOT for p
   real(kind=PR) :: vp(1:VDIM)           ! Local copy of velocity of p
 #if defined(IONIZING_UV_RADIATION)
   real(kind=PR) :: gradrhotemp(1:NDIM)  ! Gradient of density field
@@ -58,25 +58,13 @@ SUBROUTINE all_sph(p)
 
   debug3("Calculating SPH quantities [all_sph.F90] for particle ",p)
 
-! Create local copies of r, m, h, v, neighbour numbers and neighbour list 
+! Store local copies and initialize all other quantities
   rp(1:NDIM) = parray(1:NDIM,p)
   hp = parray(SMOO,p)
   invhp = 1.0_PR / hp
-  vp(1:VDIM) = v(1:VDIM,p)
-#if defined(NEIGHBOUR_LISTS)
-  pp_numb = pptot(p)
-  if (pp_numb <= pp_limit) then 
-     pp_templist(1:pp_numb) = pplist(1:pp_numb,p)
-  else
-     call gather_neib_on_fly(p,parray(SMOO,p),pp_numb,pp_templist)
-  end if
-#else
-  call gather_neib_on_fly(p,parray(SMOO,p),pp_numb,pp_templist)
-#endif
-
-! Initialize all quantities to be calculated
   hfactor = invhp**(NDIMPR)
   rhotemp = parray(MASS,p)*w0(0)*hfactor
+  vp(1:VDIM) = v(1:VDIM,p)
   div_v_p = 0.0_PR
 #if defined(IONIZING_UV_RADIATION)
   gradrhotemp(1:NDIM) = 0.0_PR
@@ -91,6 +79,17 @@ SUBROUTINE all_sph(p)
 #if defined(IDEAL_MHD) && defined(DEBUG_MHD)
   div_B_p = 0.0_PR
   Bp(1:BDIM) = B(1:BDIM,p)
+#endif
+
+#if defined(NEIGHBOUR_LISTS)
+  pp_numb = pptot(p)
+  if (pp_numb <= pp_limit) then 
+     pp_templist(1:pp_numb) = pplist(1:pp_numb,p)
+  else
+     call gather_neib_on_fly(p,parray(SMOO,p),pp_numb,pp_templist)
+  end if
+#else
+  call gather_neib_on_fly(p,parray(SMOO,p),pp_numb,pp_templist)
 #endif
 
 

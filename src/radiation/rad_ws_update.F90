@@ -32,8 +32,8 @@ SUBROUTINE rad_ws_update
   debug2("Updating radiation transport quantities [rad_ws_update.F90]")
   debug_timing("RAD_WS")
 
-! For multiple particle timesteps, first make a list of all hydro SPH 
-! particles on an acceleration step, and then parallelize over that list.
+! For block timesteps, first make a list of all hydro SPH particles on 
+! an acceleration step, and then parallelize over that list.
   acctot = 0
   allocate(acclist(1:ptot))
   do p=pgasstart,pgasend
@@ -120,6 +120,7 @@ SUBROUTINE rad_ws_update
         u(p) = ueq(p)
      end if
      
+     ! Now update all other thermal properties
      call find_idens(rho(p),idens(p))
      call find_temp_from_energy(idens(p),u(p),itemp(p),temp(p))
      mu_bar_p = eosmu(rho(p),temp(p),idens(p),itemp(p))

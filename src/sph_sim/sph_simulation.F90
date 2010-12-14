@@ -50,6 +50,10 @@ SUBROUTINE sph_simulation
   out_debug = trim(adjustl(run_dir))//trim(adjustl(run_id))//".debug.ini"
   if (.not. inifile) call write_data_debug(out_debug,rzero(1:NDIM))
 #endif
+#if defined(DEBUG_GRID_RESULTS)
+  out_debug = trim(adjustl(run_dir))//trim(adjustl(run_id))//".grid.ini"
+  if (.not. inifile) call write_data_grid_results(out_debug)
+#endif
   inifile = .true.
 
 
@@ -99,6 +103,10 @@ SUBROUTINE sph_simulation
 #if defined(DEBUG_PLOT_DATA)
   out_debug = trim(adjustl(run_dir))//trim(adjustl(run_id))//".debug.fin"
   call write_data_debug(out_debug,rzero(1:NDIM))
+#endif
+#if defined(DEBUG_GRID_RESULTS)
+  out_debug = trim(adjustl(run_dir))//trim(adjustl(run_id))//".grid.fin"
+  call write_data_grid_results(out_debug)
 #endif
 #if defined(TIMING)
   call write_timing_stats

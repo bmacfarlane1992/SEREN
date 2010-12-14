@@ -45,6 +45,7 @@ SUBROUTINE conductivity(p)
   real(kind=PR) :: radenergygrad(1:NDIM) ! radiation energy gradient
   real(kind=PR) :: R_diff                ! R diffusion term 
   real(kind=PR) :: kappaT                ! Pseudo opacity
+  real(kind=PR) :: kappa_aux             ! ..
 
 
 ! Create local copies of important properties of particle p
@@ -106,7 +107,7 @@ SUBROUTINE conductivity(p)
   end do
 ! ----------------------------------------------------------------------------
 
-  call getkappa(rho(p),temp(p),idens(p),kappaT)
+  call getkappa(rho(p),temp(p),idens(p),kappaT,kappa_aux)
   
   R_diff = sqrt(dot_product(radenergygrad,radenergygrad)) &
        & / radenergy/rho_p/kappaT

@@ -359,21 +359,15 @@ MODULE interface_module
        integer, intent(out) :: pp_list(1:LISTSIZE)
      END SUBROUTINE gather_neib_on_fly
 
-     SUBROUTINE getkappa(dens,temp,idens,kappaout)
+     SUBROUTINE getkappa(dens,temp,idens,kappa_rosseland,kappa_planck)
        !DEC$ ATTRIBUTES FORCEINLINE :: getkappa
        use definitions
-       integer, intent(in)::idens
-       real(kind=PR), intent(in)  :: temp,dens
-       real(kind=PR), intent(out) :: kappaout
+       integer, intent(in) :: idens
+       real(kind=PR), intent(in)  :: temp
+       real(kind=PR), intent(in) :: dens
+       real(kind=PR), intent(out) :: kappa_rosseland
+       real(kind=PR), intent(out) :: kappa_planck
      END SUBROUTINE getkappa
-
-     SUBROUTINE getkappap(dens,temp,idens,kappaout)
-       !DEC$ ATTRIBUTES FORCEINLINE :: getkappap
-       use definitions
-       integer, intent(in)::idens
-       real(kind=PR), intent(in)  :: temp,dens
-       real(kind=PR), intent(out) :: kappaout
-     END SUBROUTINE getkappap
 
      SUBROUTINE get_neib(p)
        use definitions

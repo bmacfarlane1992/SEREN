@@ -95,21 +95,6 @@ SUBROUTINE hydro_gradh(p)
 #ifndef RIEMANN_SOLVER
   pfactor_p  = press(p) / rho_p / rho_p / omega(p)
 #endif
-#if defined(NEIGHBOUR_LISTS)
-  pp_numb = pptot(p)
-  if (pp_numb <= pp_limit) then 
-     allocate(pp_templist(1:pp_numb))
-     do i=1,pp_numb
-        pp_templist(i) = pplist(i,p)
-     end do
-  else
-     allocate(pp_templist(1:ptot))
-     call get_neib_on_fly(p,hp,pp_numb,ptot,pp_templist)
-  end if
-#else
-  allocate(pp_templist(1:ptot))
-  call get_neib_on_fly(p,hp,pp_numb,ptot,pp_templist)
-#endif
 #if defined(ARTIFICIAL_VISCOSITY) && defined(VISC_TD)
   talpha_p = talpha(p)
 #endif
@@ -138,6 +123,22 @@ SUBROUTINE hydro_gradh(p)
 #endif
 #endif
 
+#if defined(NEIGHBOUR_LISTS)
+  pp_numb = pptot(p)
+  if (pp_numb <= pp_limit) then 
+     allocate(pp_templist(1:pp_numb))
+     do i=1,pp_numb
+        pp_templist(i) = pplist(i,p)
+     end do
+  else
+     allocate(pp_templist(1:ptot))
+     call get_neib_on_fly(p,hp,pp_numb,ptot,pp_templist)
+  end if
+#else
+  allocate(pp_templist(1:ptot))
+  call get_neib_on_fly(p,hp,pp_numb,ptot,pp_templist)
+#endif
+
 
 ! Loop over all neighbours, summing each (p'-p) acceleration component
 ! ============================================================================
@@ -156,8 +157,6 @@ SUBROUTINE hydro_gradh(p)
      dvdr = dot_product(dv,dr_unit)
      invdrmag = 1.0_PR / drmag
      dr_unit(1:NDIM) = dr_unit(1:NDIM)*invdrmag
-     invhpp = 1.0_PR / hpp
-     hfactor_pp = invhpp**(NDIMPLUS1)
 #if defined(SIGNAL_VELOCITY)
      vsigmax_p = max(vsigmax_p,sound_p + sound(pp) - beta*dvdr*invdrmag)
 #endif
@@ -193,6 +192,8 @@ SUBROUTINE hydro_gradh(p)
      end if
 
      if (drmag < KERNRANGE*hpp) then
+        invhpp = 1.0_PR / hpp
+        hfactor_pp = invhpp**(NDIMPLUS1)
         skern  = HALFKERNTOT * drmag * invhpp 
         kern   = int(skern)
         kern   = min(kern,KERNTOT)

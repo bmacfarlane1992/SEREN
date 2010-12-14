@@ -1,9 +1,8 @@
 ! INITIALIZE_SPH_VARIABLES_1.F90
 ! D. A. Hubber - 1/10/2007
-! Sets values for particular variables that need to be initialized 
-! BEFORE the first force calculations in sph_setup.F90.  Other variables 
-! (after the first force calculation) are initialized in 
-! initialize_sph_variables_2.F90
+! Sets values for particular variables that need to be initialized BEFORE the 
+! first force calculations in sph_setup.F90.  Other variables (after the first 
+! force calculation) are initialized in initialize_sph_variables_2.F90.
 ! ============================================================================
 
 #include "macros.h"
@@ -112,7 +111,6 @@ SUBROUTINE initialize_sph_variables_1
   nionize = nsteps
   nionall = nsteps
 #endif
-
 #if defined(TIMING)
   ngravcomp = 0_ILP
   nhydrocomp = 0_ILP

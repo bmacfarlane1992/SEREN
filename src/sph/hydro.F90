@@ -19,8 +19,7 @@ SUBROUTINE hydro(p)
   integer, intent(in) :: p               ! particle identifier
 
   integer :: i                           ! neighbour counter
-  integer :: kern_p                      ! kernel table element for p
-  integer :: kern_pp                     ! kernel table element for p
+  integer :: kern                        ! kernel table element
   integer :: pp                          ! neighbouring particle number
   integer :: pp_numb                     ! number of neighbours
   integer, allocatable :: pp_templist(:) ! temp. list of neighbours
@@ -87,7 +86,7 @@ SUBROUTINE hydro(p)
   rp(1:NDIM) = parray(1:NDIM,p)
   hp         = parray(SMOO,p)
   invhp      = 1.0_PR / hp
-  hfactor_p  = invhp**(NDIM)
+  hfactor_p  = invhp**(NDIMPR)
   vp(1:NDIM) = v(1:NDIM,p)
   sound_p    = sound(p)
   rho_p      = rho(p)
@@ -95,21 +94,6 @@ SUBROUTINE hydro(p)
   pfactor_p  = (press(p) - Pext) / rho_p / rho_p
 #else
   pfactor_p  = press(p) / rho_p / rho_p
-#endif
-#if defined(NEIGHBOUR_LISTS)
-  pp_numb = pptot(p)
-  if (pp_numb <= pp_limit) then 
-     allocate(pp_templist(1:pp_numb))
-     do i=1,pp_numb
-        pp_templist(i) = pplist(i,p)
-     end do
-  else
-     allocate(pp_templist(1:ptot))
-     call get_neib_on_fly(p,hp,pp_numb,ptot,pp_templist)
-  end if
-#else
-  allocate(pp_templist(1:ptot))
-  call get_neib_on_fly(p,hp,pp_numb,ptot,pp_templist)
 #endif
 #if defined(ARTIFICIAL_VISCOSITY) && defined(VISC_TD)
   talpha_p = talpha(p)
@@ -134,6 +118,23 @@ SUBROUTINE hydro(p)
 #endif
 #endif
 
+#if defined(NEIGHBOUR_LISTS)
+  pp_numb = pptot(p)
+  if (pp_numb <= pp_limit) then 
+     allocate(pp_templist(1:pp_numb))
+     do i=1,pp_numb
+        pp_templist(i) = pplist(i,p)
+     end do
+  else
+     allocate(pp_templist(1:ptot))
+     call get_neib_on_fly(p,hp,pp_numb,ptot,pp_templist)
+  end if
+#else
+  allocate(pp_templist(1:ptot))
+  call get_neib_on_fly(p,hp,pp_numb,ptot,pp_templist)
+#endif
+
+
 
 ! Loop over all neighbours, summing each (p'-p) acceleration component
 ! ============================================================================
@@ -145,9 +146,7 @@ SUBROUTINE hydro(p)
      rho_pp = rho(pp)
      mpp = parray(MASS,pp)
      hpp = parray(SMOO,pp)
-     invhpp = 1.0_PR / hpp
-     hfactor_pp = invhpp**(NDIM)
-     call distance2(rp,pp,dr,drsqd)
+     call distance2(rp(1:NDIM),pp,dr(1:NDIM),drsqd)
      if (drsqd >= KERNRANGESQD*hp*hp .and. drsqd >= KERNRANGESQD*hpp*hpp) cycle
      drmag = sqrt(drsqd) + SMALL_NUMBER
      invdrmag = 1.0_PR / drmag
@@ -169,17 +168,19 @@ SUBROUTINE hydro(p)
 #endif
 
      if (drmag < KERNRANGE*hp) then
-        skern  = HALFKERNTOT * drmag * invhp
-        kern_p = int(skern)
-        kern_p = min(kern_p,KERNTOT)
-        wmean  = 0.5_PR*hfactor_p*invhp*w1(kern_p)
+        skern  = HALFKERNTOT*drmag*invhp
+        kern   = int(skern)
+        kern   = min(kern,KERNTOT)
+        wmean  = 0.5_PR*hfactor_p*invhp*w1(kern)
      end if
 
      if (drmag < KERNRANGE*hpp) then
-        skern   = HALFKERNTOT * drmag * invhpp 
-        kern_pp = int(skern)
-        kern_pp = min(kern_pp,KERNTOT)
-        wmean = wmean + 0.5_PR*hfactor_pp*invhpp*w1(kern_pp)
+        invhpp = 1.0_PR / hpp
+        hfactor_pp = invhpp**(NDIMPR)
+        skern   = HALFKERNTOT*drmag*invhpp 
+        kern = int(skern)
+        kern = min(kern,KERNTOT)
+        wmean = wmean + 0.5_PR*hfactor_pp*invhpp*w1(kern)
      end if
 
      ! Compute hydro pressure forces

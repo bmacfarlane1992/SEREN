@@ -2,7 +2,7 @@
 ! D. A. Hubber - 1/10/2007
 ! Sets values for particular variables that need to be initialized AFTER 
 ! the first force calculations in setup.  Other variables (before the first 
-! force calculation) are initialized in initialize_variables_1.F90
+! force calculation) are initialized in initialize_variables_1.F90.
 ! ============================================================================
 
 #include "macros.h"
@@ -118,23 +118,17 @@ SUBROUTINE initialize_sph_variables_2
 #endif
 #endif
 
-! Set time for next tree build and stock
+! Set time for next tree build and stock, and next ionizing HEALPix walk
 #if defined(LEAPFROG_KDK)
   nbuild = nsteps + 2
   nstock = nsteps + 2
+  nionize = nsteps + 2
 #else
   nbuild = nsteps + 1
   nstock = nsteps + 1
-#endif
-
-! Set time for next ioniziing radiation HEALPix walk
-#if defined(LEAPFROG_KDK)
-  nionall = nsteps + nionallstep
-  nionize = nsteps + 2
-#else
-  nionall = nsteps + nionallstep
   nionize = nsteps + 1
 #endif
+  nionall = nsteps + nionallstep
 
   return
 END SUBROUTINE initialize_sph_variables_2

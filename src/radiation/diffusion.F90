@@ -48,6 +48,7 @@ SUBROUTINE diffusion(p,dt)
   real(kind=PR) :: wmean                 ! (W(p) + W(pp)) / 2
   real(kind=PR) :: kappaT                ! ..
   real(kind=PR) :: kappaT_pp             ! ..
+  real(kind=PR) :: kappa_aux             ! ..
   real(kind=PR) :: tau_p                 ! ..
   real(kind=PR) :: tau_pp                ! ..
 
@@ -80,7 +81,7 @@ SUBROUTINE diffusion(p,dt)
   dudt_diff    = 0.0_PR
   dudt_diff_pp = 0.0_PR
   du_diff      = 0.0_PR
-  call getkappa(rho_p,temp(p),idens(p),kappaT)
+  call getkappa(rho_p,temp(p),idens(p),kappaT,kappa_aux)
   tau_p        = sqrt(column2(p))*kappaT
 
 
@@ -103,7 +104,7 @@ SUBROUTINE diffusion(p,dt)
      skern    = HALFKERNTOT * drmag * invhpp 
      kern_pp  = int(skern)
      kern_pp  = min(kern_pp,KERNTOT)
-     call getkappa(rho(pp),temp(pp),idens(pp),kappaT_pp)
+     call getkappa(rho(pp),temp(pp),idens(pp),kappaT_pp,kappa_aux)
      tau_pp   = sqrt(column2(pp))*kappaT_pp
 
      if (0.5_PR*(tau_p + tau_pp) < 1.0_PR) then

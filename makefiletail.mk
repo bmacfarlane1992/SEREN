@@ -63,7 +63,7 @@ REMOVE_OUTLIERS         := $(strip $(REMOVE_OUTLIERS))
 SINKS                   := $(strip $(SINKS))
 SINK_RADIUS             := $(strip $(SINK_RADIUS))
 SINK_REMOVE_ANGMOM      := $(strip $(SINK_REMOVE_ANGMOM))
-NBODYSINKS              := $(strip $(NBODYSINKS))
+NBODY_INTEGRATION       := $(strip $(NBODY_INTEGRATION))
 BINARY_STATS            := $(strip $(BINARY_STATS))
 SINK_GRAVITY_ONLY       := $(strip $(SINK_GRAVITY_ONLY))
 TREE                    := $(strip $(TREE))
@@ -399,7 +399,7 @@ SPH_OBJ += all_sph.o bounding_box.o diagnostics.o distance2.o \
 distance2_dp.o gather_neib_on_fly.o get_neib.o get_neib_on_fly.o \
 h_guess.o reduce_particle_timestep.o sph_update.o \
 timestep_size.o track_particles.o tree_update.o
-IO_OBJ += record_particle_data.o write_data_debug.o
+IO_OBJ += record_particle_data.o write_data_debug.o write_data_grid_results.o
 SETUP_OBJ += initialize_thermal_properties.o
 
 
@@ -648,6 +648,8 @@ endif
 # ----------------------------------------------------------------------------
 ifeq ($(INDUCTION_EQN),STANDARD)
 CFLAGS += -DINDUCTION_EQN
+else ifneq ($(INDUCTION_EQN),0)
+ERROR += "Invalid value for INDUCTION_EQN : "$(INDUCTION_EQN)"\n"
 endif
 
 
@@ -656,6 +658,8 @@ endif
 ifeq ($(RESISTIVITY),1)
 CFLAGS += -DARTIFICIAL_RESISTIVITY
 SPH_OBJ += artificial_resistivity.o
+else ifneq ($(RESISTIVITY),0)
+ERROR += "Invalid value for RESISTIVITY : "$(RESISTIVITY)"\n"
 endif
 
 
@@ -695,6 +699,8 @@ endif
 ifneq ($(GRAVITY),0)
 ifneq ($(SINK_GRAVITY_ONLY),1)
 CFLAGS += -DSPH_SELF_GRAVITY
+else ifneq ($(SINK_GRAVITY_ONLY),0)
+ERROR += "Invalid value for SINK_GRAVITY_ONLY : "$(SINK_GRAVITY_ONLY)"\n"
 endif
 endif
 
@@ -726,6 +732,8 @@ ifneq ($(GRAVITY),0)
 CFLAGS += -DCELL_WALK
 SPH_OBJ += BHgrav_grouped_walk.o
 endif
+else ifneq ($(CELL_WALK),0)
+ERROR += "Invalid value for CELL_WALK : "$(CELL_WALK)"\n"
 endif
 
 else ifeq ($(TREE),BINARY)
@@ -783,6 +791,8 @@ CFLAGS += -DNEW_MAC
 else ifeq ($(MAC),EIGEN)
 CFLAGS += -DEIGEN_MAC
 SPH_OBJ += eigenvalue_mac.o
+else
+ERROR += "Invalid value for MAC : "$(MAC)"\n"
 endif
 
 
@@ -894,6 +904,8 @@ ifeq ($(NBODY_INTEGRATION),HERMITE4)
 CFLAGS += -DNBODY_HERMITE4
 NBODY_OBJ += gravity_hermite4.o
 NBODY_OBJ += nbody_hermite4_direct_gravity.o
+else
+ERROR += "Invalid value for NBODY_INTEGRATION : "$(NBODY_INTEGRATION)"\n"
 endif
 
 ifeq ($(NBODY_SPH_SIMULATION),1)
@@ -913,6 +925,8 @@ endif
 ifeq ($(BINARY_STATS),1)
 CFLAGS += -DBINARY_STATS
 NBODY_OBJ += binary_energy.o binary_properties.o binary_search.o
+else ifneq ($(BINARY_STATS),0)
+ERROR += "Invalid value for BINARY_STATS : "$(BINARY_STATS)"\n"
 endif
 endif
 # ============================================================================
@@ -1048,9 +1062,6 @@ OBJ += $(MODULE_OBJ) $(USER_MOD) $(USER_SUB) $(GENERIC_OBJ) $(SPH_OBJ) $(NBODY_O
 # ----------------------------------------------------------------------------
 %.o: %.F90 definitions.o HP_types.o modules.o interface.o
 	$(F90) $(OPT) $(CFLAGS) -c $<
-
-#%.o: %.F90
-#	$(F90) $(OPT) $(CFLAGS) -c $<
 
 seren :: $(OBJ) seren.o
 ifdef ERROR
