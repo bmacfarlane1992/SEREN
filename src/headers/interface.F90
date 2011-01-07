@@ -284,18 +284,12 @@ MODULE interface_module
        real(kind=PR), intent(out) :: gamma_eff
      END SUBROUTINE effective_gamma
 
-     SUBROUTINE eigenvalue_mac(mc,qc,mac)
+     SUBROUTINE eigenvalue_mac(qc,mac)
        !DEC$ ATTRIBUTES FORCEINLINE :: eigenvalue_mac
        use definitions
-       real(kind=PR), intent(in) :: mc
        real(kind=DP), intent(in) :: qc(1:NQUAD)
        real(kind=PR), intent(out) :: mac
      END SUBROUTINE eigenvalue_mac
-
-     SUBROUTINE solve_implicit_cooling_ws(p)
-       use definitions
-       integer, intent(in) :: p
-     END SUBROUTINE solve_implicit_cooling_ws
 
      FUNCTION eosmu(dens,temp,idens,itemp)
        !DEC$ ATTRIBUTES FORCEINLINE :: eosmu
@@ -323,6 +317,11 @@ MODULE interface_module
      SUBROUTINE fatal_error (msg)
        character(len=*), intent(in) :: msg
      END SUBROUTINE fatal_error
+
+     SUBROUTINE find_equilibrium_temp_ws(p)
+       use definitions
+       integer, intent(in) :: p
+     END SUBROUTINE find_equilibrium_temp_ws
 
      SUBROUTINE find_idens(dens,idens_index)
        !DEC$ ATTRIBUTES FORCEINLINE :: find_idens
@@ -412,6 +411,17 @@ MODULE interface_module
        real(kind=DP), intent(out) :: adottemp(1:NDIM)
        real(kind=DP), intent(out) :: dpotp
      END SUBROUTINE gravity_hermite4
+
+     SUBROUTINE gravity_meanh(hmean,mpp,rp,rpp,atemp,dpotp)
+       !DEC$ ATTRIBUTES FORCEINLINE :: gravity_gradh
+       use definitions
+       real(kind=PR), intent(in)  :: hmean
+       real(kind=PR), intent(in)  :: mpp
+       real(kind=PR), intent(in)  :: rp(1:NDIM)
+       real(kind=PR), intent(in)  :: rpp(1:NDIM)
+       real(kind=PR), intent(out) :: atemp(1:NDIM)
+       real(kind=PR), intent(out) :: dpotp
+     END SUBROUTINE gravity_meanh
 
      SUBROUTINE gravity_nbody(mpp,rp,rpp,atemp,dpotp)
        !DEC$ ATTRIBUTES FORCEINLINE :: gravity_nbody

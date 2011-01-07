@@ -1,6 +1,6 @@
 ! TREE_UPDATE.F90
 ! D. A. Hubber - 21/9/2007
-! Controlling subroutine to call tree build and tree stock routines.  
+! Control subroutine to call tree build and tree stock routines.  
 ! ============================================================================
 
 #include "macros.h"
@@ -13,21 +13,35 @@ SUBROUTINE tree_update
   use time_module, only : nsteps, nbuild, nbuildstep, nstock
   implicit none
 
+
 ! Barnes-Hut tree subroutine calls
-! ----------------------------------------------------------------------------
+! ============================================================================
 #if defined(BH_TREE)
   debug2("Updating BH tree [tree_update.F90]")
   debug_timing("BH_TREE")
 
-! Build new tree(s)
-  if (nbuild == nsteps) then
+! Build new gravity tree
+! ----------------------------------------------------------------------------
 #if defined(GRAVITY)
+  if (nbuild == nsteps) then
      call BHgrav_build
+     nstock = nsteps
 #if defined(REORDER_PARTICLES)
      call BH_reorder_particles
 #endif
-     ! If all particles are gas particles, copy the gravity tree to the
-     ! hydro tree.  Else, build the hydro tree from scratch.
+  end if
+
+! Stock trees on every acceleration step
+  if (nstock == nsteps) call BHgrav_stock
+#endif
+
+! Build new hydro tree
+! ----------------------------------------------------------------------------
+  if (nbuild == nsteps) then
+
+     ! If all particles are gas or cdm particles, copy the gravity tree 
+     ! to the hydro tree.  Else, build the hydro tree from scratch.
+#if defined(GRAVITY)
      if (pgas + pcdm == ptot) then
         call copy_BHgrav_to_BHhydro
      else
@@ -43,47 +57,36 @@ SUBROUTINE tree_update
   end if
 
 ! Stock trees on every acceleration step
-  if (nstock == nsteps) then
-#if defined(GRAVITY)
-     call BHgrav_stock
+  if (nstock == nsteps) call BHhydro_stock
+
 #endif
-     call BHhydro_stock
-  end if
-#endif
-! ----------------------------------------------------------------------------
+! ============================================================================
 
 
 ! Binary tree
-! ----------------------------------------------------------------------------
+! ============================================================================
 #if defined(BINARY_TREE)
   debug2("Updating binary tree [tree_update.F90]")
   debug_timing("BINARY_TREE")
 
 ! Build new tree
-  if (nbuild == nsteps) then
-     call binary_treebuild
-  end if
+  if (nbuild == nsteps) call binary_treebuild
 
 ! Stock trees every step
   call binary_treestock
 
 #endif
-! ----------------------------------------------------------------------------
+! ============================================================================
 
 
 ! Calculate integer time for next tree build and next tree stock depending 
 ! on the integration scheme
-  if (nbuild == nsteps) then
-     nbuild = nbuild + nbuildstep
-  endif
-
-  if (nstock == nsteps) then
+  if (nbuild == nsteps) nbuild = nbuild + nbuildstep
 #if defined(EULER) || defined(RUNGE_KUTTA)
-     nstock = nstock + 1
-#elif defined(LEAPFROG_KDK) || defined(LEAPFROG_DKD) || defined(PREDICTOR_CORRECTOR)
-     nstock = nstock + 2
+  if (nstock == nsteps) nstock = nstock + 1
+#else
+  if (nstock == nsteps) nstock = nstock + 2
 #endif
-  endif
 
   return
 END SUBROUTINE tree_update

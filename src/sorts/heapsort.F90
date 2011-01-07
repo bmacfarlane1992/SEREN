@@ -3,8 +3,7 @@
 ! Sorts a list of real variables into ascending order using heapsort.  
 ! Accepts the list of real variables to be sorted (rarray) and the list of 
 ! corresponding ids.  Returns the list of ids in order, but leaves the array 
-! of reals unchanged (N.B. This is different to the insertion sort which also 
-! returns the list of reals in the new order).
+! of reals unchanged.
 ! ============================================================================
 
 #include "macros.h"
@@ -24,7 +23,7 @@ SUBROUTINE heapsort_real(nsort,rarray,iarray)
   integer :: scom             ! location with which it is being compared
   integer :: itemp(1:nsort)   ! IDs of sorted values
 
-  debug2("Sorting out particle lists [hii_heapsort.F90]")
+  debug2("Sorting list of real variables using heapsort [heapsort_real.F90]")
 
   do s=1,nsort
      itemp(s) = nsort + 1 - s

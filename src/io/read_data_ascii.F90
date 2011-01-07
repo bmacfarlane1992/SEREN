@@ -54,20 +54,12 @@ SUBROUTINE read_data_ascii(in_file)
      ndata = ndata + 1
      data_id(ndata) = auxdata
   end do
-5 close (1)
+5 rewind(1)
 
-! Check there are a sufficient no. of data columns
-  if (ndata <= 1) then
-     write(6,*) "Invalid no. of data columns"
-     stop
-  end if
-  if (data_id(1) /= "ptype") then
-     write(6,*) "First column is not particle type id"
-     stop
-  end if
+! Check there are a sufficient no. of data columns, or ptype is not 1st column
+  if (ndata <= 1) stop "Invalid no. of data columns"
+  if (data_id(1) /= "ptype") stop "First column is not particle type id"
 
-! Open snapshot file
-  open(1, file=in_file, status="old", form="formatted")
 
 ! First, count the total no. of particles and the no. of each particle type
 ! ----------------------------------------------------------------------------
@@ -133,7 +125,7 @@ SUBROUTINE read_data_ascii(in_file)
         stop
      end if
 
-     ! If an SPH particle
+     ! If particle is an SPH particle
      ! -----------------------------------------------------------------------
      if (p > 0) then
         do i=2,ndata

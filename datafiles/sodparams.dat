@@ -1,17 +1,17 @@
-ICCOL3D-MACH1.25-M4.df.dat ! Output file name
+ICCOL3D-MACH4-M4.df.dat         ! Output file name
 dragon_form    			! Output file format
-1000_0.1_REL_3D.df.dat  	! file 1 (LHS cube)
-1000_0.1_REL_3D.df.dat    	! file 2 (RHS cube)
+1000_0.2_REL_3D.df.dat  	! file 1 (LHS cube)
+1000_0.2_REL_3D.df.dat    	! file 2 (RHS cube)
 dragon_form     		! file 1 format
 dragon_form      		! file 2 format
 1000 1000   			! p1, p2
-40 40  				! n1, n2
+20 20  				! n1, n2
 1.0 1.0     			! rho1, rho2
 1.0 1.0     			! Press1, Press2
-0.1 0.1     			! x1, x2
-0.1 0.1      			! y1, y2
-0.1 0.1      			! z1, z2
-1.25 -1.25         		! vx1, vx2
+0.2 0.2     			! x1, x2
+0.2 0.2      			! y1, y2
+0.2 0.2      			! z1, z2
+4.0 -4.0         		! vx1, vx2
 0.0 0.0     			! vy1, vy2
 0.0 0.0    			! vz1, vz2
 0.0 0.0     			! Bx1, Bx2

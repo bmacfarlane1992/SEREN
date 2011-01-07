@@ -904,7 +904,7 @@ MODULE tree_module
   integer, allocatable :: BHnextptcl(:) ! Next particle in linked list
   integer, allocatable :: whichchild(:) ! Child cell particle p is in
 
- type auxilary_node                     ! Auxilary cell node
+  type auxilary_node                     ! Auxilary cell node
      real(kind=PR) :: hmax              ! Max value of h in a cell
      real(kind=PR) :: bbmin(1:NDIM)     ! rmin
      real(kind=PR) :: bbmax(1:NDIM)     ! rmax

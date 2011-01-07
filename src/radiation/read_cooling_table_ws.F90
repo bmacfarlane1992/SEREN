@@ -18,10 +18,10 @@ SUBROUTINE read_cooling_table_ws
   implicit none
   
   logical :: ex                  ! Does 'eos.dat' file exist?
-  integer :: m                   ! Density grid counter 
-  integer :: n                   ! Temperature grid counter
+  integer :: i                   ! Density grid counter 
+  integer :: j                   ! Temperature grid counter
   real(kind=DP) :: auxscale      ! Aux. scaling variable
-  real(kind=DP) :: rdummy6(1:6)  ! Dummy array for reading arrays
+  real(kind=PR) :: rdummy6(1:6)  ! Dummy array for reading arrays
   
   debug1("Reading in eos tables [read_eos.F90]")
 
@@ -44,23 +44,23 @@ SUBROUTINE read_cooling_table_ws
      allocate(eos_mu(dim_dens,dim_temp))  
      allocate(kappa(dim_dens,dim_temp))
      allocate(kappap(dim_dens,dim_temp))
-     
+
      ! Read-in data from eos.dat
-     do m=1,dim_dens
-        do n=1,dim_temp
+     do i=1,dim_dens
+        do j=1,dim_temp
            read (2,*) rdummy6(1:6)
-           eos_dens(m)     = real(rdummy6(1),PR)
-           eos_temp(n)     = real(rdummy6(2),PR)
-           eos_energy(m,n) = real(rdummy6(3),PR)
-           eos_mu(m,n)     = real(rdummy6(4),PR)
-           kappa(m,n)      = real(rdummy6(5),PR)
-           kappap(m,n)     = real(rdummy6(6),PR)
+           eos_dens(i)     = real(rdummy6(1),PR)
+           eos_temp(j)     = real(rdummy6(2),PR)
+           eos_energy(i,j) = real(rdummy6(3),PR)
+           eos_mu(i,j)     = real(rdummy6(4),PR)
+           kappa(i,j)      = real(rdummy6(5),PR)
+           kappap(i,j)     = real(rdummy6(6),PR)
         end do
      end do
 
      close(2)
   else
-     STOP "eos.dat file not found"
+     stop "eos.dat file not found"
   end if
 ! ----------------------------------------------------------------------------
 
@@ -96,12 +96,12 @@ write(*,*) "SPIEGEL_TEST: multiplying opacities by 2.952e6*10**(-0.2*ptemp_q)(de
 #endif
 
 ! Convert arrays to code units 
-  do m=1,dim_dens
-     eos_dens(m) = eos_dens(m) / (rhoscale*rhocgs)
-     do n=1,dim_temp
-        eos_energy(m,n) = eos_energy(m,n) / auxscale
-        kappa(m,n) = kappa(m,n) / (kappascale*kappacgs)
-        kappap(m,n) = kappap(m,n) / (kappascale*kappacgs)
+  do i=1,dim_dens
+     eos_dens(i) = eos_dens(i) / (rhoscale*rhocgs)
+     do j=1,dim_temp
+        eos_energy(i,j) = eos_energy(i,j) / auxscale
+        kappa(i,j) = kappa(i,j) / (kappascale*kappacgs)
+        kappap(i,j) = kappap(i,j) / (kappascale*kappacgs)
      end do
   end do
 

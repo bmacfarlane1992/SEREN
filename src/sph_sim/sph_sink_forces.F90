@@ -90,7 +90,7 @@ SUBROUTINE sph_sink_forces
      debug_timing("GRAVITY_FORCES")
      !$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(agravs,pots)
      do s=1,stot
-        call direct_sink_gravity(-s,1.0_PR/sink(s)%h,&
+        call direct_sink_gravity(-s,sink(s)%h,&
              &sink(s)%r(1:NDIM),agravs(1:NDIM),pots)
         sink(s)%a(1:NDIM) = sink(s)%a(1:NDIM) + real(agravs(1:NDIM),PR)
         sink(s)%gpot      = sink(s)%gpot + real(pots,PR)

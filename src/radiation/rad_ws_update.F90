@@ -83,7 +83,7 @@ SUBROUTINE rad_ws_update
 #if defined(DIFFUSION)
         call diffusion(p,dt)
 #endif
-        call solve_implicit_cooling_ws(p)
+        call find_equilibrium_temp_ws(p)
      end do
      !$OMP END PARALLEL DO
   end if

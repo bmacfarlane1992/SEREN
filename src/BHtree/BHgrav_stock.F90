@@ -334,8 +334,7 @@ SUBROUTINE BHgrav_stock
         BHgrav(c)%mac = sqrt(mc*diagonalsqd/abserror)
 #elif defined(EIGEN_MAC)
         BHgrav(c)%dminsqd = diagonalsqd
-        call eigenvalue_mac(BHgrav(c)%m,&
-             &real(BHgrav(c)%q(1:NQUAD),DP),BHgrav(c)%mac)
+        call eigenvalue_mac(real(BHgrav(c)%q(1:NQUAD),DP),BHgrav(c)%mac)
 #endif
 
         ! Ensure all cells including (scatter) neighbours are opened

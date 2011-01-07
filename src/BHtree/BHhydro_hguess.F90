@@ -98,7 +98,7 @@ SUBROUTINE BHhydro_hguess
 ! ============================================================================
 
 
-#ifdef DEBUG_H_GUESS
+#if defined(DEBUG_H_GUESS)
   write(6,*) "Finished creating temporary tree variables"
 #endif
 

@@ -152,7 +152,7 @@ OPT += -I $(MODULEDIR) -I $(HEADERS)
 #OPT += -mtune=core2 -march=core2 #-mfpmath=sse -msse4.2 -ffast-math 
 OPT += -Winline -fexpensive-optimizations -finline-functions -finline-limit=200
 ifneq ($(PROFILE),0)
-OPT += -Wall -pedantic -fbounds-check -ffpe-trap=invalid,zero,overflow,underflow,denormal  #-fbacktrace
+OPT += -Wall -pedantic -fbounds-check -ffpe-trap=invalid,zero,overflow,underflow,denormal  -fbacktrace
 endif
 ifeq ($(OPENMP),1)
 OPT += -fopenmp -DOPENMP
@@ -174,7 +174,7 @@ else ifeq ($(F90),sunf95)
 CFLAGS += -DCOMPILER_SUNF95
 OPT += -I$(MODULEDIR) -I$(HEADERS)
 OPT += -ansi
-OPT += -inline=%auto,distance2,distance3,gravity_sphp
+OPT += -inline=%auto,distance2,distance3,gravity_sph
 ifneq ($(DEBUG),0)
 OPT += -C -w4 -u #-xcheck=%all
 ifeq ($(OPENMP),1)
@@ -513,7 +513,7 @@ CFLAGS += -DENTROPIC_FUNCTION -DINTERNAL_ENERGY
 
 else ifeq ($(THERMAL),RAD_WS)
 CFLAGS += -DRAD_WS -DRAD -DINTERNAL_ENERGY -DU_IMPLICIT_SOLVER
-SPH_OBJ += rad_ws_update.o solve_implicit_cooling_ws.o 
+SPH_OBJ += rad_ws_update.o find_equilibrium_temp_ws.o 
 SPH_OBJ += read_cooling_table_ws.o ambienttemp.o
 ifeq ($(FLUX_LIMITED_DIFFUSION),1)
 CFLAGS += -DDIFFUSION
@@ -685,7 +685,7 @@ SPH_OBJ += sph_grav_forces.o
 
 ifeq ($(GRAVITY),KS)
 CFLAGS += -DGRAVITY
-SPH_OBJ += gravity_sph.o
+SPH_OBJ += gravity_sph.o gravity_meanh.o
 ifeq ($(SPH),GRAD_H_SPH)
 SPH_OBJ += gravity_gradh.o
 endif
@@ -912,7 +912,7 @@ ifeq ($(NBODY_SPH_SIMULATION),1)
 ifeq ($(TREE),BH)
 SPH_OBJ += BHgrav_accel_jerk.o
 else
-SPH_OBJ += nbody_sph_star_direct_gravity.o
+SPH_OBJ += sph_hermite4_direct_gravity.o
 endif
 endif
 
@@ -1154,8 +1154,8 @@ ic_spitzer :: $(OBJ) ic_spitzer.o
 ic_vel_pert :: $(OBJ) $(IC_OBJ) ic_vel_pert.o
 	$(F90) $(OPT) $(CFLAGS) -o $(EXEDIR)/ic_vel_pert $(OBJ) $(IC_OBJ) ic_vel_pert.o
 
-gravtest :: $(OBJ) direct_gravity.o gravtest.o
-	$(F90) $(OPT) $(CFLAGS) -o gravtest $(OBJ) direct_gravity.o gravtest.o
+gravtest :: $(OBJ) direct_sph_gravity.o gravtest.o
+	$(F90) $(OPT) $(CFLAGS) -o gravtest $(OBJ) direct_sph_gravity.o gravtest.o
 
 lane_emden :: definitions.o modules.o lane_emden.o
 	$(F90) $(OPT) $(CFLAGS) -o lane_emden modules.o lane_emden.o 

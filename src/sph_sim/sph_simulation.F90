@@ -98,6 +98,7 @@ SUBROUTINE sph_simulation
   end do
 ! ============================================================================
 
+
 ! Write final snapshot
   call write_data(out_final,out_file_form)
 #if defined(DEBUG_PLOT_DATA)

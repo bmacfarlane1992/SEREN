@@ -7,13 +7,13 @@ VERSION_NO               = "1.0.0"
 SRCDIR                   = $(PWD)/src
 EXEDIR                   = $(PWD)
 OPTIMISE                 = 3
-OPENMP                   = 1
+OPENMP                   = 0
 PROFILE                  = 0
 DEBUG                    = 1
 NDIM                     = 3
 PRECISION                = SINGLE
-INFILE_FORMAT            = SEREN
-OUTFILE_FORMAT           = SEREN
+INFILE_FORMAT            = ALL
+OUTFILE_FORMAT           = ALL
 PERIODIC                 = 0
 X_BOUNDARY               = 0
 Y_BOUNDARY               = 0
@@ -37,7 +37,7 @@ KERNEL                   = M4TC
 HFIND                    = NUMBER
 MINIMUM_H                = 0
 HYDRO                    = 1
-THERMAL                  = ENERGY_EQN
+THERMAL                  = BAROTROPIC
 SINK_POTENTIAL_WS        = 0
 AMBIENT_HEATING_WS       = 0
 SINK_HEATING_WS          = 0
@@ -53,15 +53,15 @@ EXTERNAL_PRESSURE        = 0
 MHD                      = 0
 INDUCTION_EQN            = 0
 RESISTIVITY              = 0
-EXTERNAL_FORCE           = NFW1996
-GRAVITY                  = 0
+EXTERNAL_FORCE           = 0
+GRAVITY                  = KS
 EWALD                    = 0
 REMOVE_OUTLIERS          = 0
 
 # ----------------------------------------------------------------------------
 # Sink and N-body options
 # ----------------------------------------------------------------------------
-SINKS                    = 0
+SINKS                    = SIMPLE
 SINK_RADIUS              = HMULT
 SINK_REMOVE_ANGMOM       = 0
 SINK_GRAVITY_ONLY        = 0
@@ -73,7 +73,7 @@ BINARY_STATS             = 0
 # ----------------------------------------------------------------------------
 TREE                     = BH
 MULTIPOLE                = QUADRUPOLE
-MAC                      = GADGET
+MAC                      = GEOMETRIC
 REORDER                  = PARTICLES
 CELL_WALK                = 0
 
@@ -86,7 +86,7 @@ CHECK_NEIB_TIMESTEP      = 2
 SIGNAL_VELOCITY_DT       = 0
 NEIGHBOURLISTS           = 1
 TIMING_CODE              = 1
-DIMENSIONLESS            = 1
+DIMENSIONLESS            = 0
 TEST                     = 0
 
 # ----------------------------------------------------------------------------

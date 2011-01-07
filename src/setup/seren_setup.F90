@@ -1,13 +1,13 @@
 ! SEREN_SETUP.F90
 ! C. P. Batty, D. A. Hubber, A.McLeod & A. P. Whitworth - 8/12/2006
-! Set-up all Seren routines.
+! Run all main Seren set-up routines.
 ! ============================================================================
 
 #include "macros.h"
 
 ! ============================================================================
 SUBROUTINE seren_setup
-  use interface_module, only : paramstore,read_parameters
+  use interface_module, only : paramstore,read_data,read_parameters
   use definitions
   use filename_module
   use seren_sim_module
@@ -18,7 +18,7 @@ SUBROUTINE seren_setup
 ! Read in and process command line arguments
   call read_arguments
 
-! Set default parameters
+! Set default parameters in case we read in an incomplete parameters file
   call default_parameters
 
 ! Reading parameter file
@@ -33,20 +33,20 @@ SUBROUTINE seren_setup
 ! Setting up scaling units for simulation
   call units
 
-! Reading in formatted data file
+! Reading input snapshot data file
   call read_data(in_file,in_file_form)
 
-! Writing compiler flags and parameters to file
+! Writing compiler flags and parameters to file for record
   store_file = trim(adjustl(run_dir))//trim(adjustl(run_id))//".params"
   call paramstore(store_file)
 
-! Setting up for different particle types
+! Setting up variables for different particle types
   call types
 
-! Converting to dimensionless code units
+! Converting all important physical variables to dimensionless code units
   call convert_to_code_units
 
-! Initialising kernel tables
+! Initialising SPH kernel tables
   call kernel
 
 ! Read in opacity tables for radiation transport
@@ -59,7 +59,7 @@ SUBROUTINE seren_setup
   call ewald_init
 #endif
 
-! Calculate COM of system, and if required, change to COM
+! Calculate COM of system, and if required, change to COM frame
   call COM
 
 ! Initialise all other particles arrays

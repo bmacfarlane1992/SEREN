@@ -142,11 +142,12 @@ SUBROUTINE sph_grav_forces
   ! --------------------------------------------------------------------------
   if (acctot > 0) then
      debug_timing("GRAVITY_FORCES")
+     debug2("Calculating SPH grav. forces from sinks [direct_sink_gravity.F90]")
      !$OMP PARALLEL DO SCHEDULE(DYNAMIC,chunksize) DEFAULT(SHARED) &
      !$OMP PRIVATE(agravp,p,potp)
      do i=1,acctot
         p = acclist(i)
-        call direct_sink_gravity(p,1.0_PR/parray(SMOO,p),&
+        call direct_sink_gravity(p,parray(SMOO,p),&
              &parray(1:NDIM,p),agravp(1:NDIM),potp)
         a(1:NDIM,p) = a(1:NDIM,p) + real(agravp(1:NDIM),PR)
         gpot(p) = gpot(p) + real(potp,PR)

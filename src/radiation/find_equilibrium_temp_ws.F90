@@ -1,4 +1,4 @@
-! SOLVE_IMPLICIT_COOLING_WS.F90
+! FIND_EQUILIBRIUM_TEMP_WS.F90
 ! D. Stamatellos & D. A. Hubber - 17/8/2009
 ! Contains subroutines and functions for use in new energy equation 
 ! and radiative transfer method (Stamatellos et al. 2007).
@@ -7,7 +7,7 @@
 #include "macros.h"
 
 ! ============================================================================
-SUBROUTINE solve_implicit_cooling_ws(p)
+SUBROUTINE find_equilibrium_temp_ws(p)
   use interface_module, only : ambient_temp,ebalance,eosenergy,eosmu,&
        &find_idens,find_itemp,find_temp_from_energy,getkappa
   use particle_module
@@ -316,7 +316,7 @@ SUBROUTINE solve_implicit_cooling_ws(p)
 #endif
 
   return
-END SUBROUTINE solve_implicit_cooling_ws
+END SUBROUTINE find_equilibrium_temp_ws
 
 
 

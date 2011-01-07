@@ -33,20 +33,8 @@ SUBROUTINE gravity_nbody(mpp,rp,rpp,atemp,dpotp)
 #if defined(EWALD)
   call distance3(rp(1:NDIM),rpp(1:NDIM),dr(1:NDIM),drsqd)
 #else
-  dr(1) = rpp(1) - rp(1)
-#if NDIM==2 || NDIM==3
-  dr(2) = rpp(2) - rp(2)
-#endif
-#if NDIM==3
-  dr(3) = rpp(3) - rp(3)
-#endif
-#if NDIM==1
-  drsqd = dr(1)*dr(1)
-#elif NDIM==2
-  drsqd = dr(1)*dr(1) + dr(2)*dr(2)
-#elif NDIM==3
-  drsqd = dr(1)*dr(1) + dr(2)*dr(2) + dr(3)*dr(3)
-#endif
+  dr(1:NDIM) = rpp(1:NDIM) - rp(1:NDIM)
+  drsqd = dot_product(dr(1:NDIM),dr(1:NDIM))
 #endif
   drmag    = sqrt(drsqd) + SMALL_NUMBER
   invdrmag = 1.0_PR / drmag

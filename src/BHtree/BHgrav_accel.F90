@@ -20,7 +20,7 @@
 ! ============================================================================
 SUBROUTINE BHgrav_accel(p,invhp,rp,agravp,potp)
   use interface_module, only : distance3,ewald_force,&
-       &gravity_gradh,gravity_nbody,gravity_sph
+       &gravity_gradh,gravity_nbody,gravity_sph,gravity_meanh
   use definitions
   use tree_module
   use particle_module
@@ -64,6 +64,7 @@ SUBROUTINE BHgrav_accel(p,invhp,rp,agravp,potp)
 #if defined(SINKS)
   integer :: s                      ! Sink counter
   integer :: ss                     ! Sink counter
+  real(kind=PR) :: hp               ! Smoothing length
 #endif
 #if defined(EWALD)
   real(kind=PR) :: eaccel(1:NDIM)   ! Ewald grav. acceleration
@@ -81,6 +82,7 @@ SUBROUTINE BHgrav_accel(p,invhp,rp,agravp,potp)
 #if defined(SINKS)
   if (p < 0) s = -p
   if (p >= 0) s = 0
+  hp = 1.0_PR / invhp
 #endif
 
 ! Make local copies of zeta/omega if required
@@ -301,7 +303,7 @@ SUBROUTINE BHgrav_accel(p,invhp,rp,agravp,potp)
            call gravity_nbody(parray(MASS,pp),rp(1:NDIM),&
                 &parray(1:NDIM,pp),atemp(1:NDIM),dpot)
 #else
-           call gravity_sph(invhp,parray(SMOO,pp),parray(MASS,pp),&
+           call gravity_meanh(0.5_PR*(hp + parray(SMOO,pp)),parray(MASS,pp),&
                 &rp(1:NDIM),parray(1:NDIM,pp),atemp(1:NDIM),dpot)
 #endif
            agravp(1:NDIM) = agravp(1:NDIM) + real(atemp(1:NDIM),DP)
@@ -326,19 +328,19 @@ SUBROUTINE BHgrav_accel(p,invhp,rp,agravp,potp)
 
 ! Include contribution due to sink particles        
 ! ----------------------------------------------------------------------------
-#if defined(SINKS)
-  do ss=1,stot
-     if (s == ss) cycle
-#if defined(N_BODY)
-     call gravity_nbody(sink(ss)%m,rp,sink(ss)%r(1:NDIM),atemp,dpot)
-#else
-     call gravity_sph(invhp,sink(ss)%h,sink(ss)%m,rp(1:NDIM),&
-          &sink(ss)%r(1:NDIM),atemp,dpot)
-#endif
-     agravp(1:NDIM) = agravp(1:NDIM) + real(atemp(1:NDIM),DP)
-     potp = potp + real(dpot,DP)
-  end do
-#endif
+!#if defined(SINKS)
+!  do ss=1,stot
+!     if (s == ss) cycle
+!#if defined(N_BODY)
+!     call gravity_nbody(sink(ss)%m,rp,sink(ss)%r(1:NDIM),atemp,dpot)
+!#else
+!     call gravity_sph(invhp,sink(ss)%h,sink(ss)%m,rp(1:NDIM),&
+!          &sink(ss)%r(1:NDIM),atemp,dpot)
+!#endif
+!     agravp(1:NDIM) = agravp(1:NDIM) + real(atemp(1:NDIM),DP)
+!     potp = potp + real(dpot,DP)
+!  end do
+!#endif
 ! ----------------------------------------------------------------------------
 
   return

@@ -11,19 +11,18 @@
 #include "macros.h"
 
 ! ============================================================================
-SUBROUTINE eigenvalue_mac(mc,qc,mac)
+SUBROUTINE eigenvalue_mac(qc,mac)
   use definitions
   use tree_module, only : abserror
   implicit none
 
-  real(kind=PR), intent(in) :: mc           ! Mass of cell c
   real(kind=DP), intent(in) :: qc(1:NQUAD)  ! Quadrupole moment tensor of c
   real(kind=PR), intent(out) :: mac         ! MAC value
 
   real(kind=DP) :: lambda                   ! max eigenvalue
-  real(kind=DP) :: p                        ! traceqsqd/3
+  real(kind=DP) :: p                        ! ??
 
-! Compute q-matrix trace-variable depending on dimensionality
+! Compute q-matrix variable depending on dimensionality
 #if NDIM==2
   p = qc(1)*qc(3) - (qc(1) + qc(3))*(qc(1) + qc(3)) - qc(2)*qc(2)
 #elif NDIM==3
