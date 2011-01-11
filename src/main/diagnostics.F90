@@ -50,6 +50,7 @@ SUBROUTINE diagnostics
 #if defined(DEBUG_DIAGNOSTICS)
   logical :: ex                        ! Does file exist already?
   character(len=40) :: out_file        ! Name of outputted debug file
+  integer :: itemp                     ! ..
   real(kind=DP) :: ttemp               ! ..
 #endif
 #if defined(DEBUG_FORCES)
@@ -298,7 +299,7 @@ SUBROUTINE diagnostics
      open(1,file=out_file,status="unknown",&
           &form="formatted",position="rewind")
      do
-        read(1,'(1E18.10)',end=50,err=50) ttemp
+        read(1,'(I8,E18.10)',end=50,err=50) itemp,ttemp
         if (ttemp > time*tscale) exit
      end do
 50   backspace (1,err=100)

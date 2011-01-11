@@ -74,9 +74,10 @@ SUBROUTINE nbody_hermite4_extra_terms
      do ss=1,stot
         if (s == ss) cycle
         rss(1:NDIM) = star(ss)%r(1:NDIM)
-        call gravity_hermite4(1.0_DP/star(s)%h,star(ss)%h,star(ss)%m,&
-             &star(s)%r(1:NDIM),star(ss)%r(1:NDIM),star(s)%v(1:NDIM),&
-             &star(ss)%v(1:NDIM),atemp(1:NDIM),adottemp,dpotp)
+        call gravity_hermite4_meanh(0.5_DP*(star(s)%h + star(ss)%h),&
+             &star(ss)%m,star(s)%r(1:NDIM),star(ss)%r(1:NDIM),&
+             &star(s)%v(1:NDIM),star(ss)%v(1:NDIM),atemp(1:NDIM),&
+             &adottemp(1:NDIM),dpotp)
         call distance3_dp(rs2(1:NDIM),rss(1:NDIM),dr(1:NDIM),drsqd)
         invdrsqd = 1.0_DP/drsqd
         invdrmag = sqrt(invdrsqd)

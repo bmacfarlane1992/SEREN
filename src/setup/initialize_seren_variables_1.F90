@@ -16,6 +16,7 @@ SUBROUTINE initialize_seren_variables_1
   use hydro_module
   use timing_module
   use periodic_module
+  use time_module
   implicit none
 
   logical :: flag                       ! flag if restart file exists
@@ -48,6 +49,8 @@ SUBROUTINE initialize_seren_variables_1
      fileform_ext = ".sf"
   else if (out_file_form=="seren_unform" .or. out_file_form=="su") then
      fileform_ext = ".su"
+  else if (out_file_form=="ascii") then
+     fileform_ext = ".as"
   end if
 
   run_dir = trim(adjustl(run_dir))//"/"
@@ -102,6 +105,15 @@ SUBROUTINE initialize_seren_variables_1
 
 ! Initialize all timing variables
 ! ----------------------------------------------------------------------------
+  nsteps    = 0
+  time      = 0.0_DP
+  nextsnap  = firstsnap
+  lastsnap  = 0.0_DP
+  snapshot  = 0
+  ntempnext = ntempstep
+  ndiagnext = ndiagstep
+  nsnapnext = nsnapstep
+  nsinknext = nsinkstep
 #if defined(TIMING)
   itime    = 0
   rtime    = 0.0_DP

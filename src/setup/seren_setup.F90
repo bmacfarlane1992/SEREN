@@ -11,6 +11,7 @@ SUBROUTINE seren_setup
   use definitions
   use filename_module
   use seren_sim_module
+use particle_module
   implicit none
 
   character(len=256) :: store_file   ! parameters output

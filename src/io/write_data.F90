@@ -34,6 +34,13 @@ SUBROUTINE write_data(filename,file_form)
      call write_data_seren_unform(filename)
 #endif
 
+! Simple column data ASCII format
+! ----------------------------------------------------------------------------
+#if defined(ASCII_OUTPUT)
+  case ("ascii")
+     call write_data_ascii(filename)
+#endif
+
 ! If no recognised file format
 ! ----------------------------------------------------------------------------
   case default

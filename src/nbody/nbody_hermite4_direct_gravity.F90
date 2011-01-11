@@ -7,7 +7,7 @@
 #include "macros.h"
 
 ! ============================================================================
-SUBROUTINE nbody_hermite4_direct_gravity(s,invhs,rs,vs,agravs,adots,potp)
+SUBROUTINE nbody_hermite4_direct_gravity(s,hs,rs,vs,agravs,adots,potp)
   use interface_module, only : gravity_hermite4
   use definitions
   use Nbody_module
@@ -15,7 +15,7 @@ SUBROUTINE nbody_hermite4_direct_gravity(s,invhs,rs,vs,agravs,adots,potp)
   implicit none
 
   integer, intent(in) :: s                     ! Star i.d.
-  real(kind=DP), intent(in) :: invhs           ! Smoothing length of star s
+  real(kind=DP), intent(in) :: hs              ! Smoothing length of star s
   real(kind=DP), intent(in) :: rs(1:NDIM)      ! Position of star s
   real(kind=DP), intent(in) :: vs(1:NDIM)      ! Velocity of star s
   real(kind=DP), intent(out) :: agravs(1:NDIM) ! Grav. accel of star s
@@ -34,11 +34,12 @@ SUBROUTINE nbody_hermite4_direct_gravity(s,invhs,rs,vs,agravs,adots,potp)
   agravs(1:NDIM)   = 0.0_DP
   potp             = 0.0_DP
 
+
 ! Loop over all other stars and calculate net gravitational acceleration
 ! ----------------------------------------------------------------------------
   do ss=1,stot
      if (s == ss) cycle
-     call gravity_hermite4(invhs,star(ss)%h,star(ss)%m,&
+     call gravity_hermite4_meanh(0.5_DP*(hs + star(ss)%h),star(ss)%m,&
           &rs(1:NDIM),star(ss)%r(1:NDIM),vs(1:NDIM),&
           &star(ss)%v(1:NDIM),atemp(1:NDIM),adottemp(1:NDIM),dpotp)
      agravs(1:NDIM) = agravs(1:NDIM) + atemp(1:NDIM)

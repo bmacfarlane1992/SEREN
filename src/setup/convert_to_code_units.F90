@@ -31,7 +31,7 @@ SUBROUTINE convert_to_code_units
 
 ! Scale main particle data to code units 
 ! ----------------------------------------------------------------------------
-  do p=1,ptot  
+  do p=1,ptot
      parray(1:NDIM,p) = parray(1:NDIM,p) / real(rscale,PR)
      parray(MASS,p)   = parray(MASS,p) / real(mscale,PR)
      parray(SMOO,p)   = parray(SMOO,p) / real(rscale,PR)

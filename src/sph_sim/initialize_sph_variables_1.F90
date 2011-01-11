@@ -47,11 +47,9 @@ SUBROUTINE initialize_sph_variables_1
 ! Artificial viscosity and conductivity variables
 ! ----------------------------------------------------------------------------
 #if defined(VISC_TD)
-  do p=1,ptot
-     talpha(p)     = alpha_min
-     talpha_old(p) = alpha_min
-     dalpha_dt(p)  = 0.0_PR
-  end do
+  talpha(1:ptot)     = alpha_min
+  talpha_old(1:ptot) = alpha_min
+  dalpha_dt(1:ptot)  = 0.0_PR
 #endif
 #if defined(VISC_BALSARA)
   balsara(1:ptot) = 0.0_PR
@@ -77,7 +75,7 @@ SUBROUTINE initialize_sph_variables_1
 ! Zero acceleration arrays
 ! ----------------------------------------------------------------------------
   a(1:VDIM,1:ptot) = 0.0_PR
-#if !defined(GEOMETRIC_MAC) && defined(GRAVITY)
+#if defined(GRAVITY) && !defined(GEOMETRIC_MAC)
   agravmag(1:ptot) = 0.0_PR
 #if defined(SINKS)
   sink(1:stot)%agravmag = 0.0_PR
@@ -108,8 +106,6 @@ SUBROUTINE initialize_sph_variables_1
 #endif
 #if defined(IONIZING_UV_RADIATION)
   temp_min(1:ptot) = 0.0_PR
-  nionize = nsteps
-  nionall = nsteps
 #endif
 #if defined(TIMING)
   ngravcomp = 0_ILP
@@ -117,9 +113,11 @@ SUBROUTINE initialize_sph_variables_1
   nsphcomp = 0_ILP
 #endif
 
-! Tree-building and stocking time variables
+! Tree-building, stocking and ionization time variables
   nbuild = nsteps
   nstock = nsteps
+  nionize = nsteps
+  nionall = nsteps
 #if defined(BINARY_TREE)
   nskeleton = nsteps
 #endif

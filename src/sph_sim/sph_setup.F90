@@ -38,7 +38,9 @@ SUBROUTINE sph_setup
   call sph_update
 
 ! Initialize all thermal properties depending on options used
+#if defined(HYDRO)
   call initialize_thermal_properties
+#endif
 
 ! Calculate hydro forces on all SPH particles
 #if defined(HYDRO)

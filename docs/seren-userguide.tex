@@ -1573,19 +1573,46 @@ Jscale \times J\_SI = \frac{Qscale \times Q\_SI}
 \section{File formats}
 \NAME \VERNO uses both the DRAGON file format and the native \NAME file format for reading in initial conditions and writing out snapshots.  Unlike in DRAGON, the format of the initial conditions file need not be the same as the format of the output snapshots.  This is controlled by the two input parameters in the parameters file, \var{in\_file\_form} and \var{out\_file\_form}.  The possible values for these parameters are : 
 \begin{itemize}
+\item \var{ascii} - Simple (ASCII) column format
 \item \var{dragon\_form} - Formatted (ASCII) DRAGON snapshot files
 \item \var{dragon\_unform} - Unformatted (binary) DRAGON snapshot files
 \item \var{seren\_form} - Formatted (ASCII) \NAME snapshot files
 \item \var{seren\_unform} - Unformatted (binary) \NAME snapshot files (Not yet working)
 \end{itemize}
 
-As well as standard snapshot files, \NAME can also produce simple ASCII 
-output which is useful for debugging purposes.
-
-%\newpage
+As well as standard snapshot files, \NAME can also produce a simple ASCII 
+output which is useful for debugging purposes.  This can be enabled by using the {\rm -DDEBUG\_PLOT\_DATA} compiler flag.
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{ASCII format}
+Seren can use a simple flexible ASCII column-format.  The data is stored in columns with width $N_{_{\rm COLUMNS}}$ and length $N$ (where $N$ is the total number of particles of all types).  The data descriptor of each column is contained in a file labelled \var{asciicolumns.dat} (a template copy should be stored in the \var{/datafiles} sub-directory).  The possible data descriptors currently enabled in \NAME are
+\begin{itemize} 
+\item \var{ptype} - Particle type.  The following particle types are available in \NAME : 
+\begin{itemize}
+\item -1 : sink/star
+\item  0 : dead particle
+\item  1 : gas
+\item  6 : boundary particle
+\item  9 : ICM particle
+\item 10 : cold-dark matter particle
+\end{itemize}
+\item \var{x} or \var{y} or {z} - Cartesian position coordinates
+\item \var{vx} or \var{vy} or \var{vz} - Cartesian velocity componenets
+\item \var{h} - Smoothing length
+\item \var{m} - Mass
+\item \var{u} - Specific internal energy
+\end{itemize}
+The only constraint on the column order is that the first column must be \var{ptype}.  Thereafter, the remaining columns can be arranged in any order.  In the file containing the data, the data must match up to the chosen columns correctly, or the particle data will be read-in incorrectly.  All physical quantities are measured in the units defined in the \var{params.dat} file.  Due to the simplicity of this format, it contains no extra information (e.g. time, gamma, etc.), and therefore is perhaps not of long-term practical use, but should be suitable for those who wish to generate their own initial conditions from other programmes without learning all the complications of the other available formats.
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Dragon format}
+To be written
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Seren format}
+To be written
 
 
 

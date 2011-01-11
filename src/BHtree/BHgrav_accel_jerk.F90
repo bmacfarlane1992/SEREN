@@ -18,8 +18,8 @@
 #include "macros.h"
 
 ! ============================================================================
-SUBROUTINE BHgrav_accel_jerk(p,invhs,rs,vs,agravp,adotp,potp)
-  use interface_module, only : distance3_dp,ewald_force,gravity_hermite4
+SUBROUTINE BHgrav_accel_jerk(s,hs,rs,vs,agravs,adots,pots)
+  use interface_module, only : distance3_dp,ewald_force,gravity_hermite4_meanh
   use definitions
   use tree_module
   use Nbody_module
@@ -29,19 +29,18 @@ SUBROUTINE BHgrav_accel_jerk(p,invhs,rs,vs,agravp,adotp,potp)
 #endif
   implicit none
 
-  integer, intent(in) :: p                      ! Id of star
-  real(kind=DP), intent(in) :: invhs            ! Smoothing length of p
+  integer, intent(in) :: s                      ! Id of star
+  real(kind=DP), intent(in) :: hs               ! Smoothing length of p
   real(kind=DP), intent(in) :: rs(1:NDIM)       ! Position of particle p
   real(kind=DP), intent(in) :: vs(1:NDIM)       ! Velocity of particle p
-  real(kind=DP), intent(out) :: agravp(1:NDIM)  ! Gravitational acceleration
-  real(kind=DP), intent(out) :: adotp(1:NDIM)   ! Gravitational 'jerk'
-  real(kind=DP), intent(out) :: potp            ! Gravitational potential
+  real(kind=DP), intent(out) :: agravs(1:NDIM)  ! Gravitational acceleration
+  real(kind=DP), intent(out) :: adots(1:NDIM)   ! Gravitational 'jerk'
+  real(kind=DP), intent(out) :: pots            ! Gravitational potential
 
   integer :: c                      ! Cell counter
   integer :: i                      ! Auxilary counter
   integer :: nlist                  ! Number of particles in treelist
   integer :: pp                     ! Second particle identifier
-  integer :: s                      ! ..
   integer :: ss                     ! Secondary star counter
   integer :: treelist(1:GLISTSIZE)  ! List of nearby particle ids
   real(kind=DP) :: adottemp(1:NDIM) ! ..
@@ -68,16 +67,15 @@ SUBROUTINE BHgrav_accel_jerk(p,invhs,rs,vs,agravp,adotp,potp)
   debug3("Calculating gravity forces [BHtreegravity.F90] for particle ", p)
 
 ! Zero arrays and variables
-  agravp(1:NDIM) = 0.0_DP
-  adotp(1:NDIM) = 0.0_DP
-  potp = 0.0_DP
+  agravs(1:NDIM) = 0.0_DP
+  adots(1:NDIM) = 0.0_DP
+  pots = 0.0_DP
   nlist = 0
 
 ! Prepare various MAC variables for tree walk
 #ifndef GEOMETRIC_MAC
-  if (p < 0) s = -p
-  if (p < 0) afactor = star(s)%agravmag
-  if (p > 0) afactor = agravmag(p)
+  afactor = star(s)%agravmag
+  if (afactor <= SMALL_NUMBER_DP) afactor = 0.0_DP
   if (afactor > SMALL_NUMBER) then
 #if defined(GADGET_MAC)
      afactor = afactor**(-ONETHIRD_DP)
@@ -102,10 +100,10 @@ SUBROUTINE BHgrav_accel_jerk(p,invhs,rs,vs,agravp,adotp,potp)
      ! simply record particle id in list straight away
      if (BHgrav(c)%leaf == 1) then
         pp = BHgrav(c)%plist(1)
-        if (pp /= p) then
+!        if (pp /= p) then
            nlist = nlist + 1
            treelist(nlist) = pp
-        end if
+!        end if
 
         ! Point to next cell in list
         c = BHgrav(c)%nextcell
@@ -119,20 +117,8 @@ SUBROUTINE BHgrav_accel_jerk(p,invhs,rs,vs,agravp,adotp,potp)
         call distance3_dp(real(BHgrav(c)%r(1:NDIM),DP),&
              &rs(1:NDIM),dr(1:NDIM),drsqd)
 #else
-        dr(1) = rs(1) - BHgrav(c)%r(1)
-#if NDIM==2 || NDIM==3
-        dr(2) = rs(2) - BHgrav(c)%r(2)
-#endif
-#if NDIM==3
-        dr(3) = rs(3) - BHgrav(c)%r(3)
-#endif
-#if NDIM==1
-        drsqd = dr(1)*dr(1)
-#elif NDIM==2
-        drsqd = dr(1)*dr(1) + dr(2)*dr(2)
-#elif NDIM==3
-        drsqd = dr(1)*dr(1) + dr(2)*dr(2) + dr(3)*dr(3)
-#endif
+        dr(1:NDIM) = rs(1:NDIM) - BHgrav(c)%r(1:NDIM)
+        drsqd = dot_product(dr(1:NDIM),dr(1:NDIM))
 #endif
 
         ! If distance between p and c is greater than min distance, and the 
@@ -144,7 +130,7 @@ SUBROUTINE BHgrav_accel_jerk(p,invhs,rs,vs,agravp,adotp,potp)
 #else 
         if (drsqd > BHgrav(c)%mac*afactor .and. drsqd > BHgrav(c)%dminsqd) then
 #endif        
-           invdrsqd = 1.0_DP / (drsqd + SMALL_NUMBER)
+           invdrsqd = 1.0_DP / (drsqd + SMALL_NUMBER_DP)
            invdrmag = sqrt(invdrsqd)
            atemp(1:NDIM) = -BHgrav(c)%m*invdrsqd*invdrmag*dr(1:NDIM)
            dpot = BHgrav(c)%m*invdrmag
@@ -208,14 +194,14 @@ SUBROUTINE BHgrav_accel_jerk(p,invhs,rs,vs,agravp,adotp,potp)
 #endif
 
            ! Add contribution due to cell c to summation vector
-           agravp(1:NDIM) = agravp(1:NDIM) + atemp(1:NDIM)
-           !adotp(1:NDIM) = adotp(1:NDIM) + adottemp(1:NDIM)
-           potp = potp + dpot
+           agravs(1:NDIM) = agravs(1:NDIM) + atemp(1:NDIM)
+           !adots(1:NDIM) = adots(1:NDIM) + adottemp(1:NDIM)
+           pots = pots + dpot
 
            ! Add Ewald correction force if required
 #if defined(EWALD)
            call ewald_force(dr(1:NDIM),BHgrav(c)%m,eaccel(1:NDIM))
-           agravp(1:NDIM) = agravp(1:NDIM) + real(eaccel(1:NDIM),DP)
+           agravs(1:NDIM) = agravs(1:NDIM) + real(eaccel(1:NDIM),DP)
 #endif
 
            ! Move to next cell
@@ -231,7 +217,7 @@ SUBROUTINE BHgrav_accel_jerk(p,invhs,rs,vs,agravp,adotp,potp)
               ! If so, loop over all particles in leaf cell
               do i=1,BHgrav(c)%leaf
                  pp = BHgrav(c)%plist(i)
-                 if (p == pp) cycle
+!                 if (p == pp) cycle
                  nlist = nlist + 1
                  treelist(nlist) = pp
               end do
@@ -258,20 +244,19 @@ SUBROUTINE BHgrav_accel_jerk(p,invhs,rs,vs,agravp,adotp,potp)
         do i=1,nlist
            pp = treelist(i)
 #if defined(NBODY_HERMITE4)
-           call gravity_hermite4(invhs,real(parray(SMOO,pp),DP),&
+           call gravity_hermite4_meanh(0.5_DP*(hs + real(parray(SMOO,pp),DP)),&
                 &real(parray(MASS,pp),DP),rs(1:NDIM),&
                 &real(parray(1:NDIM,pp),DP),vs(1:NDIM),&
                 &real(v(1:NDIM,pp),DP),atemp(1:NDIM),&
                 &adottemp(1:NDIM),dpot)
 #endif
-           agravp(1:NDIM) = agravp(1:NDIM) + atemp(1:NDIM)
-           adotp(1:NDIM) = adotp(1:NDIM) + adottemp(1:NDIM)
-           potp = potp + dpot
+           agravs(1:NDIM) = agravs(1:NDIM) + atemp(1:NDIM)
+           adots(1:NDIM) = adots(1:NDIM) + adottemp(1:NDIM)
+           pots = pots + dpot
         end do
         nlist = 0
      end if
      ! -----------------------------------------------------------------------
-
 
      ! Exit loop if we have finished traversing the tree
      if (c > ctot_grav) exit

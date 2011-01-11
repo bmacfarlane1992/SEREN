@@ -412,6 +412,21 @@ MODULE interface_module
        real(kind=DP), intent(out) :: dpotp
      END SUBROUTINE gravity_hermite4
 
+     SUBROUTINE gravity_hermite4_meanh(hmean,mpp,rp,rpp,vp,vpp,&
+          &atemp,adottemp,dpotp)
+       !DEC$ ATTRIBUTES FORCEINLINE :: gravity_hermite4
+       use definitions
+       real(kind=DP), intent(in)  :: hmean
+       real(kind=DP), intent(in)  :: mpp
+       real(kind=DP), intent(in)  :: rp(1:NDIM)
+       real(kind=DP), intent(in)  :: rpp(1:NDIM)
+       real(kind=DP), intent(in)  :: vp(1:NDIM)
+       real(kind=DP), intent(in)  :: vpp(1:NDIM)
+       real(kind=DP), intent(out) :: atemp(1:NDIM)
+       real(kind=DP), intent(out) :: adottemp(1:NDIM)
+       real(kind=DP), intent(out) :: dpotp
+     END SUBROUTINE gravity_hermite4_meanh
+
      SUBROUTINE gravity_meanh(hmean,mpp,rp,rpp,atemp,dpotp)
        !DEC$ ATTRIBUTES FORCEINLINE :: gravity_gradh
        use definitions

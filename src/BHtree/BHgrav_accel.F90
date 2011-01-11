@@ -93,24 +93,25 @@ SUBROUTINE BHgrav_accel(p,invhp,rp,agravp,potp)
      zo_p = parray(ZETA,p)
   end if
 #endif
-
 ! Prepare various MAC variables for tree walk
 #ifndef GEOMETRIC_MAC
   afactor = 0.0_PR
 #if defined(SINKS)
   if (p < 0) afactor = sink(s)%agravmag
 #endif
-  if (p > 0) afactor = agravmag(p)
-  if (afactor > SMALL_NUMBER) then
+  if (p > 0) then
+     afactor = agravmag(p)
+     if (afactor > SMALL_NUMBER) then
 #if defined(GADGET_MAC)
-     afactor = afactor**(-ONETHIRD)
+        afactor = afactor**(-ONETHIRD)
 #elif defined(GADGET2_MAC)
-     afactor = 1.0_PR/sqrt(afactor)
+        afactor = 1.0_PR/sqrt(afactor)
 #elif defined(EIGEN_MAC)
-     afactor = (1.0_PR/gpot(p))**(2.0_PR*ONETHIRD)
+        afactor = (1.0_PR/gpot(p))**(2.0_PR*ONETHIRD)
 #endif
-  else
-     afactor = 0.0_PR
+     else
+        afactor = 0.0_PR
+     end if
   end if
 #endif
 

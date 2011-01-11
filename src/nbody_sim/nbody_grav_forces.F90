@@ -29,7 +29,7 @@ SUBROUTINE nbody_grav_forces
 !$OMP PRIVATE(adot,agrav,pot) IF (stot > 100)
   do s=1,stot
      if (.not. star(s)%accdo) cycle
-     call nbody_hermite4_direct_gravity(s,1.0_DP/star(s)%h,star(s)%r(1:NDIM),&
+     call nbody_hermite4_direct_gravity(s,star(s)%h,star(s)%r(1:NDIM),&
           &star(s)%v(1:NDIM),agrav(1:NDIM),adot(1:NDIM),pot)
      star(s)%a(1:NDIM)    = agrav(1:NDIM)
      star(s)%adot(1:NDIM) = adot(1:NDIM)

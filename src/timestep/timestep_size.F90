@@ -121,25 +121,25 @@ SUBROUTINE timestep_size(p,dt)
   end if
 #endif
 
-#if defined(DEBUG_BLOCK_TIMESTEPS)
-  meantcour = meantcour + tcour
-  meantacc = meantacc + tacc
-  if (tcour > tacc) then
-     ncour = ncour + 1
-  else
-     nacc = nacc + 1
-  end if
-#endif
+!#if defined(DEBUG_BLOCK_TIMESTEPS)
+!  meantcour = meantcour + tcour
+!  meantacc = meantacc + tacc
+!  if (tcour > tacc) then
+!     ncour = ncour + 1
+!  else
+!     nacc = nacc + 1
+!  end if
+!#endif
 
 #if defined(DEBUG_TIMESTEP_SIZE)
 #if defined(HYDRO)
   write(6,*) "Courant timestep,      tcour    : ", tcour
 #if defined(INTERNAL_ENERGY) && !defined(RAD_WS)
-  write(6,*) "Energy timestep,       tenergy  : ", tenergy
+  write(6,*) "Energy timestep,       tenergy  : ", tenergy,up,dudt_p
 #endif
 #endif
   write(6,*) "Acceleration timestep, tacc     : ", tacc
-  write(6,*) "Minimum timestep,      dt       : ", dt
+  write(6,*) "Minimum timestep,      dt       : ", dt,p
 #endif
 
   return

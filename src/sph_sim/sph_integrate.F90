@@ -24,10 +24,14 @@
 ! ============================================================================
 SUBROUTINE sph_integrate
   use particle_module
+  use sink_module
   use time_module
   implicit none
 
   integer :: p
+#if defined(SINKS)
+  integer :: s
+#endif
 
   debug2("Performing next SPH integration step [sph_integrate.F90]")
 
@@ -45,9 +49,6 @@ SUBROUTINE sph_integrate
 ! Zero acceleration array of all active particles here (for now)
   do p=1,ptot
      if (accdo(p)) a(1:VDIM,p) = 0.0_PR
-#if defined(GRAVITY)
-     if (accdo(p)) gpot(p) = 0.0_PR
-#endif
 #if defined(DEBUG_FORCES) && defined(GRAVITY)
      if (accdo(p)) a_grav(1:NDIM,p) = 0.0_PR
 #endif
@@ -55,6 +56,13 @@ SUBROUTINE sph_integrate
      if (accdo(p)) a_hydro(1:NDIM,p) = 0.0_PR
 #endif
   end do
+
+! Zero relevant star arrays
+#if defined(SINKS)
+  do s=1,stot
+     if (accdo_sinks) sink(s)%a(1:NDIM) = 0.0_DP
+  end do
+#endif
 
 ! Calculate hydro forces on all SPH particles
 #if defined(HYDRO)

@@ -1,17 +1,17 @@
 # ----------------------------------------------------------------------------
-# Seren Makefile version 1.0.0
-# Date : 08/12/2010
+# Seren Makefile version 1.0.1
+# Date : 10/01/2011
 # ----------------------------------------------------------------------------
 F90                      = gfortran
-VERSION_NO               = "1.0.0"
+VERSION_NO               = 1.0.1
 SRCDIR                   = $(PWD)/src
 EXEDIR                   = $(PWD)
 OPTIMISE                 = 3
-OPENMP                   = 0
+OPENMP                   = 1
 PROFILE                  = 0
 DEBUG                    = 1
 NDIM                     = 3
-PRECISION                = SINGLE
+PRECISION                = DOUBLE
 INFILE_FORMAT            = ALL
 OUTFILE_FORMAT           = ALL
 PERIODIC                 = 0
@@ -31,13 +31,13 @@ NBODY_SIMULATION         = 0
 # ----------------------------------------------------------------------------
 # SPH simulation options
 # ----------------------------------------------------------------------------
-SPH                      = GRAD_H_SPH
+SPH                      = STANDARD
 SPH_INTEGRATION          = LFKDK
 KERNEL                   = M4TC
 HFIND                    = NUMBER
 MINIMUM_H                = 0
 HYDRO                    = 1
-THERMAL                  = BAROTROPIC
+THERMAL                  = ENERGY_EQN
 SINK_POTENTIAL_WS        = 0
 AMBIENT_HEATING_WS       = 0
 SINK_HEATING_WS          = 0
@@ -82,7 +82,7 @@ CELL_WALK                = 0
 # ----------------------------------------------------------------------------
 SORT                     = INSERTION
 TIMESTEP                 = RESTRICTED
-CHECK_NEIB_TIMESTEP      = 2
+CHECK_NEIB_TIMESTEP      = 0
 SIGNAL_VELOCITY_DT       = 0
 NEIGHBOURLISTS           = 1
 TIMING_CODE              = 1
@@ -117,7 +117,6 @@ DFLAGS += -DDEBUG_DIAGNOSTICS
 #DFLAGS += -DDEBUG_GATHER_NEIB
 #DFLAGS += -DDEBUG_GET_NEIB
 #DFLAGS += -DDEBUG_GRAD_H_SPH
-#DFLAGS += -DDEBUG_GRID_RESULTS
 #DFLAGS += -DDEBUG_HEAPSORT
 #DFLAGS += -DDEBUG_HERMITE4
 #DFLAGS += -DDEBUG_H_GATHER
@@ -133,7 +132,7 @@ DFLAGS += -DDEBUG_DIAGNOSTICS
 #DFLAGS += -DDEBUG_MHD
 #DFLAGS += -DDEBUG_NBODYSETUP
 #DFLAGS += -DDEBUG_PARAMETERS
-DFLAGS += -DDEBUG_PLOT_DATA
+#DFLAGS += -DDEBUG_PLOT_DATA
 #DFLAGS += -DDEBUG_RAD
 #DFLAGS += -DDEBUG_REDUCE_TIMESTEP
 #DFLAGS += -DDEBUG_REMOVE_OUTLIERS
@@ -147,6 +146,7 @@ DFLAGS += -DDEBUG_PLOT_DATA
 #DFLAGS += -DDEBUG_SPH_UPDATE
 #DFLAGS += -DDEBUG_SWAP_PARTICLE_DATA
 #DFLAGS += -DDEBUG_TIMESTEP_SIZE
+DFLAGS += -DDEBUG_TRACK_ENERGY
 #DFLAGS += -DDEBUG_TRACK_PARTICLE
 #DFLAGS += -DDEBUG_TREE_BUILD
 #DFLAGS += -DDEBUG_TREE_GRAVITY
@@ -291,8 +291,6 @@ include makefiletail.mk
 #                                i.e. T ~ To*(R/Ro)^(-q), 
 #                                where R is the distance in disc midplane 
 #                                (To, Ro (in AU), Tinf set in params.dat)
-#                           HDISC_HEATING_3D_SINGLE = As HDISC_HEATING but 
-#                                uses 3D distance from single star.
 
 # FLUX_LIMITED_DIFFUSION  : Hybrid flux-limited diffusion method (0 or 1)
 

@@ -42,10 +42,10 @@ SUBROUTINE gravity_meanh(hmean,mpp,rp,rpp,atemp,dpotp)
 #endif
   drmag = sqrt(drsqd) + SMALL_NUMBER
   invdrmag = 1.0_PR / drmag
-  invhmean = 1.0_PR / hmean
 
 ! Calculate contribution of gravity from particle p
-  if (invdrmag > INVKERNRANGE*invhmean) then
+  if (drmag < KERNRANGE*hmean) then
+     invhmean = 1.0_PR / hmean
      kern = int(HALFKERNTOT*drmag*invhmean)
      kern = min(kern,KERNTOT)
      grav = invdrmag*invhmean*invhmean*w5(kern)

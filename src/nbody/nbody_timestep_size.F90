@@ -30,10 +30,10 @@ SUBROUTINE nbody_timestep_size(s,dt)
   dt2   = (sqrt(asqd*a2sqd) + a1sqd) / (sqrt(a1sqd*a3sqd) + a2sqd)
   dt    = nbody_timemult*sqrt(dt2)
 
-!#if defined(DEBUG_BLOCK_TIMESTEPS)
-!  write(6,*) "Timestep for star ",s,dt,dt2
-!  write(6,*) "asqd : ",asqd,a1sqd,a2sqd,a3sqd
-!#endif
+#if defined(DEBUG_TIMESTEP_SIZE)
+  write(6,*) "Timestep for star ",s,dt,dt2
+  write(6,*) "asqd : ",asqd,a1sqd,a2sqd,a3sqd
+#endif
 
 ! ----------------------------------------------------------------------------
 #elif defined(NBODY_HERMITE6)

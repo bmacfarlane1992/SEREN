@@ -152,7 +152,7 @@ OPT += -I $(MODULEDIR) -I $(HEADERS)
 #OPT += -mtune=core2 -march=core2 #-mfpmath=sse -msse4.2 -ffast-math 
 OPT += -Winline -fexpensive-optimizations -finline-functions -finline-limit=200
 ifneq ($(PROFILE),0)
-OPT += -Wall -pedantic -fbounds-check -ffpe-trap=invalid,zero,overflow,underflow,denormal  -fbacktrace
+OPT += -Wall -pedantic -fbounds-check -ffpe-trap=invalid,zero,overflow,underflow,denormal -fbacktrace
 endif
 ifeq ($(OPENMP),1)
 OPT += -fopenmp -DOPENMP
@@ -276,8 +276,8 @@ endif
 # Output file format
 # ----------------------------------------------------------------------------
 ifeq ($(OUTFILE_FORMAT),ALL)
-CFLAGS += -DDRAGON_OUTPUT -DSEREN_OUTPUT
-IO_OBJ += write_data_dragon_form.o write_data_dragon_unform.o
+CFLAGS += -DDRAGON_OUTPUT -DSEREN_OUTPUT -DASCII_OUTPUT
+IO_OBJ += write_data_ascii.o write_data_dragon_form.o write_data_dragon_unform.o
 IO_OBJ += write_data_seren_form.o write_data_seren_unform.o
 else ifeq ($(OUTFILE_FORMAT),DRAGON)
 CFLAGS += -DDRAGON_OUTPUT
@@ -285,6 +285,9 @@ IO_OBJ += write_data_dragon_form.o write_data_dragon_unform.o
 else ifeq ($(OUTFILE_FORMAT),SEREN)
 CFLAGS += -DSEREN_OUTPUT
 IO_OBJ += write_data_seren_form.o write_data_seren_unform.o
+else ifeq ($(OUTFILE_FORMAT),ASCII)
+CFLAGS += -DASCII_OUTPUT
+IO_OBJ += write_data_ascii.o
 else
 ERROR += "Invalid OUTFILE_FORMAT option selected : "$(OUTFILE_FORMAT)"\n"
 endif
@@ -902,7 +905,7 @@ SETUP_OBJ += nbody_accrete_bound_particles.o nbody_hermite4_extra_terms.o
 
 ifeq ($(NBODY_INTEGRATION),HERMITE4)
 CFLAGS += -DNBODY_HERMITE4
-NBODY_OBJ += gravity_hermite4.o
+NBODY_OBJ += gravity_hermite4_meanh.o
 NBODY_OBJ += nbody_hermite4_direct_gravity.o
 else
 ERROR += "Invalid value for NBODY_INTEGRATION : "$(NBODY_INTEGRATION)"\n"

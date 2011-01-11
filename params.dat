@@ -6,41 +6,41 @@ Contains all input parameters to perform a simulation using Seren.
 ==============================================================================
 File parameters
 ==============================================================================
-Run identification tag                    : run_id = BBSIT3
+Run identification tag                    : run_id = TST3
 Run directory                             : run_dir = .
-Initial conditions file                   : in_file = 8000_SIT.df.dat
-Input file format                         : in_file_form = df
-Output file format                        : out_file_form = du
+Initial conditions file                   : in_file = ics_4010.txt
+Input file format                         : in_file_form = ascii
+Output file format                        : out_file_form = su
 
 ==============================================================================
 Misc. parameters
 ==============================================================================
 Is this simulation a restart?             : restart = .FALSE.
-Shift system to centre-of-mass frame?     : com_frame = .FALSE.
+Shift system to centre-of-mass frame?     : com_frame = .TRUE.
 Random number seed                        : rseed = 1
 Particle tracking id                      : ptrack = 10000
 
 ==============================================================================
 Simulation time parameters
 ==============================================================================
-SPH run time                              : sph_endtime = 0.1
+SPH run time                              : sph_endtime = 12000.0
 N-body/SPH run time                       : nbody_sph_endtime = 10.0
-N-body run time                           : nbody_endtime = 10.0
+N-body run time                           : nbody_endtime = 1.0
 
-Time of first output snapshot             : firstsnap = 0.015
-Snapshot time interval                    : snaptime = 0.0002
-Temp. snapshot integer time interval      : ntempstep = 1024
+Time of first output snapshot             : firstsnap = 0.0005
+Snapshot time interval                    : snaptime = 0.0005
+Temp. snapshot integer time interval      : ntempstep = 8192
 Diag. output integer time interval        : ndiagstep = 256
-Sink output integer time interval         : nsinkstep = 32
+Sink output integer time interval         : nsinkstep = 256
 Snapshot integer time interval            : nsnapstep = 10000000
 
 Courant timestep multiplier               : courant_mult = 0.2
-Acceleration timestep multiplier          : accel_mult = 0.4
-Sink timestep multiplier                  : sink_mult = 0.6
+Acceleration timestep multiplier          : accel_mult = 0.5
+Sink timestep multiplier                  : sink_mult = 0.75
 N-body timestep multiplier                : nbody_timemult = 0.1
 
-No. of quantised timestep levels          : nlevels = 5
-Fixed (maximum) timestep                  : dt_fixed = 0.0002
+No. of quantised timestep levels          : nlevels = 1
+Fixed (maximum) timestep                  : dt_fixed = 0.0005
 
 ==============================================================================
 Unit parameters
@@ -50,7 +50,7 @@ Mass unit                                 : munit      = m_sun
 Time unit                                 : tunit      = myr
 Velocity unit                             : vunit      = km_s
 Acceleration unit                         : aunit      = km_s2
-Density unit                              : rhounit    = g_cm3
+Density unit                              : rhounit    = m_sun_pc3
 Column density unit                       : sigmaunit  = g_cm2
 Pressure unit                             : Punit      = Pa
 Force unit                                : funit      = N
@@ -71,12 +71,12 @@ Mass scaling factor                       : mscale     = 1.0
 ==============================================================================
 Periodic parameters
 ==============================================================================
-Minimum x-extent of periodic box          : periodic_min(1) = 0.0
-Maximum x-extent of periodic box          : periodic_max(1) = 0.2
-Minimum y-extent of periodic box          : periodic_min(2) = 0.0
-Maximum y-extent of periodic box          : periodic_max(2) = 0.2
-Minimum z-extent of periodic box          : periodic_min(3) = 0.0
-Maximum z-extent of periodic box          : periodic_max(3) = 0.2
+Minimum x-extent of periodic box          : periodic_min(1) = -0.5
+Maximum x-extent of periodic box          : periodic_max(1) = 0.5
+Minimum y-extent of periodic box          : periodic_min(2) = -0.5
+Maximum y-extent of periodic box          : periodic_max(2) = 0.5
+Minimum z-extent of periodic box          : periodic_min(3) = -0.5
+Maximum z-extent of periodic box          : periodic_max(3) = 0.5
 Radius of spherical mirror                : rspheremax = 10.0
 Origin of spherical mirror                : psphere = 0
 (0 - origin; < 0 sink; > 0 SPH particle)
@@ -110,15 +110,15 @@ artificial viscosity
 ==============================================================================
 Tree parameters
 ==============================================================================
-Gravity tree MAC error parameter          : abserror = 0.05
+Gravity tree MAC error parameter          : abserror = 0.0025
 Maximum opening angle squared             : thetamaxsqd = 0.2
-Integer timesteps between tree builds     : nbuildstep = 8
+Integer timesteps between tree builds     : nbuildstep = 16
 
 ==============================================================================
 Sink creation parameters
 ==============================================================================
 Sink creation density                     : rhosink = 2.0e-12
-Sink radius in units of h, or in AU       : sinkrad = 3.0
+Sink radius in units of h, or in AU       : sinkrad = 2.0
 (depending on the SINK_RADIUS option)
 Sink search integer time interval         : nsearchstep        = 16
 Sink density criterion                    : rho_search         = .TRUE.
@@ -154,7 +154,7 @@ Removal distance value                    : rad_lost      = 4000.0
 ==============================================================================
 N-body parameters
 ==============================================================================
-Gas-accreted fraction before converting   : nbody_frac = 0.95
+Gas-accreted fraction before converting   : nbody_frac = 0.9999999
 to N-body phase
 
 ==============================================================================
@@ -171,16 +171,16 @@ HEALPix parameters
 ==============================================================================
 No. of steps between following all        : nionallstep = 8
 HEALPix rays
-Ray integration step accuracy parameter   : f1 = 0.8
-Angular resolution parameter              : f2 = 1.2
+Ray integration step accuracy parameter   : f1 = 0.2
+Angular resolution parameter              : f2 = 0.4
 Temperature smoothing parameter           : f3 = 1.0
-Evaluation point interpolation parameter  : f4 = 0.75
-Temperature of neutral gas                : Tneut = 100.0
+Evaluation point interpolation parameter  : f4 = 0.0
+Temperature of neutral gas                : Tneut = 10.0
 Temperature of ionized gas                : Tion = 10000.0
 Fraction of hydrogen                      : Xfrac = 0.7
 Recombination coeffieicient               : a_star = 2.7D-13
-No. of ionizing photons per second        : N_LyC = 3.2D+48
+No. of ionizing photons per second        : N_LyC = 1.0D+49
 x-position of static ionization source    : rstatic(1) = 0.0
 y-position of static ionization source    : rstatic(2) = 0.0
 z-position of static ionization source    : rstatic(3) = 0.0
-Maximum no. of HEALPix levels             : lmax_hp = 10
+Maximum no. of HEALPix levels             : lmax_hp = 7

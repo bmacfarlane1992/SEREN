@@ -54,12 +54,12 @@ SUBROUTINE read_data_ascii(in_file)
      ndata = ndata + 1
      data_id(ndata) = auxdata
   end do
-5 rewind(1)
+5 close(5)
 
 ! Check there are a sufficient no. of data columns, or ptype is not 1st column
   if (ndata <= 1) stop "Invalid no. of data columns"
   if (data_id(1) /= "ptype") stop "First column is not particle type id"
-
+  open(1, file=in_file, status="old", form="formatted")
 
 ! First, count the total no. of particles and the no. of each particle type
 ! ----------------------------------------------------------------------------
@@ -143,7 +143,7 @@ SUBROUTINE read_data_ascii(in_file)
               v(1,p) = pdata(i)
            else if (data_id(i) == "vy" .and. VDIM > 1) then
               v(2,p) = pdata(i)
-           else if (data_id(i) == "vx" .and. VDIM == 3) then
+           else if (data_id(i) == "vz" .and. VDIM == 3) then
               v(3,p) = pdata(i)
            else if (data_id(i) == "rho") then
               rho(p) = pdata(i)
@@ -153,6 +153,7 @@ SUBROUTINE read_data_ascii(in_file)
 #endif
            end if
         end do
+
 
      ! Else, if a sink particle
      ! -----------------------------------------------------------------------
@@ -177,10 +178,13 @@ SUBROUTINE read_data_ascii(in_file)
               sink(s)%v(3) = pdata(i)
            end if
         end do
+        sink(s)%accrete = .true.
+        sink(s)%static  = .false.
+        sink(s)%radius  = KERNRANGE*sink(s)%h
 #endif
      end if
      ! -----------------------------------------------------------------------
-     
+
   end do
 ! ============================================================================
 
