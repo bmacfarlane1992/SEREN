@@ -6,37 +6,37 @@ Contains all input parameters to perform a simulation using Seren.
 ==============================================================================
 File parameters
 ==============================================================================
-Run identification tag                    : run_id = TST3
+Run identification tag                    : run_id = BBSIT4
 Run directory                             : run_dir = .
-Initial conditions file                   : in_file = ics_4010.txt
-Input file format                         : in_file_form = ascii
+Initial conditions file                   : in_file = 8000_SIT.dat
+Input file format                         : in_file_form = df
 Output file format                        : out_file_form = su
 
 ==============================================================================
 Misc. parameters
 ==============================================================================
 Is this simulation a restart?             : restart = .FALSE.
-Shift system to centre-of-mass frame?     : com_frame = .TRUE.
+Shift system to centre-of-mass frame?     : com_frame = .FALSE.
 Random number seed                        : rseed = 1
 Particle tracking id                      : ptrack = 10000
 
 ==============================================================================
 Simulation time parameters
 ==============================================================================
-SPH run time                              : sph_endtime = 12000.0
+SPH run time                              : sph_endtime = 0.1
 N-body/SPH run time                       : nbody_sph_endtime = 10.0
 N-body run time                           : nbody_endtime = 1.0
 
-Time of first output snapshot             : firstsnap = 0.0005
+Time of first output snapshot             : firstsnap = 0.015
 Snapshot time interval                    : snaptime = 0.0005
 Temp. snapshot integer time interval      : ntempstep = 8192
 Diag. output integer time interval        : ndiagstep = 256
-Sink output integer time interval         : nsinkstep = 256
+Sink output integer time interval         : nsinkstep = 32
 Snapshot integer time interval            : nsnapstep = 10000000
 
-Courant timestep multiplier               : courant_mult = 0.2
-Acceleration timestep multiplier          : accel_mult = 0.5
-Sink timestep multiplier                  : sink_mult = 0.75
+Courant timestep multiplier               : courant_mult = 0.15
+Acceleration timestep multiplier          : accel_mult = 0.3
+Sink timestep multiplier                  : sink_mult = 0.5
 N-body timestep multiplier                : nbody_timemult = 0.1
 
 No. of quantised timestep levels          : nlevels = 1
@@ -118,7 +118,7 @@ Integer timesteps between tree builds     : nbuildstep = 16
 Sink creation parameters
 ==============================================================================
 Sink creation density                     : rhosink = 2.0e-12
-Sink radius in units of h, or in AU       : sinkrad = 2.0
+Sink radius in units of h, or in AU       : sinkrad = 5.0
 (depending on the SINK_RADIUS option)
 Sink search integer time interval         : nsearchstep        = 16
 Sink density criterion                    : rho_search         = .TRUE.

@@ -41,12 +41,6 @@ SUBROUTINE direct_sink_gravity(p,hp,rp,agravp,potp)
   s = -1
   if (p < 0) s = -p
 
-! Record potential due to only SPH particles for polytropic cooling method
-#if defined(RAD_WS)
-  if (p > 0) sphgpot(p) = potp
-#endif
-
-
 ! Add contributions due to all sinks
 ! ----------------------------------------------------------------------------
   do ss=1,stot
