@@ -13,7 +13,8 @@ SUBROUTINE sph_simulation
   use filename_module
   use particle_module, only : ptot
   use neighbour_module, only : pp_gather
-  use time_module, only : time, sph_endtime
+  use time_module, only : time, sph_endtime, sph_endmass, sph_endrho
+  use sink_module, only : stot, sink_frac
 #if defined(NBODY_SPH_SIMULATION) || defined(NBODY_SIMULATION)
   use sink_module, only : stot, sink_frac
   use Nbody_module, only : nbody_frac, nbody_endtime
@@ -21,10 +22,9 @@ SUBROUTINE sph_simulation
 #if defined(IONIZING_UV_RADIATION)
   use type_module, only : pionized
 #endif
-#if defined(DEBUG_RAD) || defined(FREEFALL_TEST)
   use hydro_module, only : rho
   use scaling_module, only : rhoscale, rhocgs
-#endif
+
   implicit none
 
 #if defined(DEBUG_PLOT_DATA) && defined(SPH_SIMULATION)
@@ -63,6 +63,11 @@ SUBROUTINE sph_simulation
 
      ! Exit main loop if simulation has reached endtime
      if (time >= sph_endtime) exit     
+     if (sink_frac >= sph_endmass) exit
+     if (maxval(rho) >= (sph_endrho/(rhoscale*rhocgs))) exit
+
+
+     ! Calculate gas m
 
      ! Exit main loop if too few particles remain (e.g. from accretion)
      if (ptot <= pp_gather) exit

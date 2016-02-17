@@ -9,18 +9,22 @@
 
 ! ============================================================================
 SUBROUTINE default_parameters
+  use interface_module
   use periodic_module
   use scaling_module
   use filename_module
   use time_module
   use sink_module
+  use Eos_module, only: z_factor
   use Tprof_module
   use particle_module
+#ifdef ANALYSE_DISC
+  use analyse_module
+#endif
   use neighbour_module, only : pp_gather,hmin,h_fac
   use hydro_module, only : alpha,beta,alpha_min,mu_bar,isotemp,&
                            &rhobary,gamma,Kpoly,Pext
   use Nbody_module, only : nbody_endtime,nbody_frac,nbody_timemult
-  use Eos_module, only : fcolumn
   use tree_module, only : thetamaxsqd, abserror
   use HP_module, only : a_star,f1,f2,f3,f4,lmax_hp,N_Lyc, &
                                &rstatic,Tion,Tneut,Xfrac
@@ -45,6 +49,8 @@ SUBROUTINE default_parameters
   
 ! Time variables
   call add_double_parameter("sph_endtime",sph_endtime,1.0_DP)
+  call add_double_parameter("sph_endmass",sph_endmass,1.0_DP)
+  call add_double_parameter("sph_endrho",sph_endrho,1.0_DP)
   call add_double_parameter("nbody_endtime",nbody_endtime,1.0_DP)
   call add_double_parameter("nbody_sph_endtime",nbody_sph_endtime,1.0_DP)
   call add_double_parameter("firstsnap",firstsnap,0.0_DP)
@@ -129,8 +135,28 @@ SUBROUTINE default_parameters
   call add_double_parameter("smooth_accrete_dt",smooth_accrete_dt,5.0E-3_DP)
   call add_real_parameter("f_accretion",f_accretion,0.75_PR)
   call add_real_parameter("feedback_tdelay",feedback_tdelay,0.0_PR)
-  call add_real_parameter("feedback_minmass",feedback_minmass,10.0_PR)
+  call add_real_parameter("feedback_minmass",feedback_minmass,0.01_PR)
+  call add_real_parameter("star_radius",star_radius,3.0_PR)
+  call add_real_parameter("BD_radius",BD_radius,0.2_PR)
+  call add_real_parameter("planet_radius",planet_radius,0.1_PR)
 
+#ifdef EPISODIC_ACCRETION
+  call add_real_parameter("alpha_EA",alpha_EA,0.1_PR)
+  call add_double_parameter("dmdt_regular",dmdt_regular,1.0E-7_DP)
+#endif
+
+#ifdef ANALYSE_DISC
+  call add_integer_parameter("disc_nbins",disc_nbins,100)
+  call add_real_parameter("disc_in_radius",disc_in_radius,0.0_DP)
+  call add_real_parameter("disc_out_radius",disc_out_radius,100.0_DP)
+#ifdef PLANET_IN_DISC
+  call add_integer_parameter("pdisc_nbins",pdisc_nbins,40)
+  call add_real_parameter("pdisc_in_radius",pdisc_in_radius,0.0_DP)
+  call add_real_parameter("pdisc_out_radius",pdisc_out_radius,20.0_DP)
+#endif
+#endif  
+
+  
 ! SPH particle removal criteria
   call add_logical_parameter("rho_remove",rho_remove,.false.)
   call add_logical_parameter("energy_remove",energy_remove,.false.)
@@ -153,8 +179,10 @@ SUBROUTINE default_parameters
   call add_real_parameter("temp_inf",temp_inf,10.0_PR)
   call add_real_parameter("ptemp_r0",ptemp_r0,0.25_PR)
   call add_real_parameter("ptemp_q",ptemp_q,0.75_PR)
-  call add_real_parameter("fcolumn",fcolumn,0.104_PR)
-
+#if defined(RAD_WS)
+  call add_string_parameter("eos_opa_file",eos_opa_file,"eos.dat")
+  call add_real_parameter("z_factor",z_factor,1.0_PR)
+#endif
 ! HEALPix ionizing radiation parameters
   call add_long_integer_parameter("nionallstep",nionallstep,8_ILP)
   call add_real_parameter("f1",f1,0.5_PR)
@@ -281,7 +309,10 @@ END SUBROUTINE add_double_parameter
 ! D. A. Hubber - 21/08/2010
 ! Add string variable parameter to input parameter list
 ! ============================================================================
-SUBROUTINE add_string_parameter(param_name,cpointer,cdefault)
+ !MODULE string_function
+ ! INTERFACE
+
+  SUBROUTINE add_string_parameter(param_name,cpointer,cdefault)
   use definitions
   use filename_module
   implicit none
@@ -297,8 +328,10 @@ SUBROUTINE add_string_parameter(param_name,cpointer,cdefault)
   params(nparams)%var_c    = cdefault
 
   return
-END SUBROUTINE add_string_parameter
+  END SUBROUTINE add_string_parameter
 
+ !END INTERFACE
+ !END MODULE string_function
 
 
 ! ============================================================================

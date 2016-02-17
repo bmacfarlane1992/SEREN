@@ -58,6 +58,15 @@ SUBROUTINE thermal(p)
   press_p = Pconst*temp_p*rho_p
   sound_p = sqrt(press_p/rho_p)
 #endif
+
+! 'Local' Isothermal equation of state (T~To*R^{-q})
+! ----------------------------------------------------------------------------
+#if defined(LOCAL_ISOTHERMAL) 
+  call ambient_temp(p,temp_p) 
+  press_p = Pconst*temp_p*rho_p
+  sound_p = sqrt(press_p/rho_p)
+#endif
+
 ! ----------------------------------------------------------------------------
   
   

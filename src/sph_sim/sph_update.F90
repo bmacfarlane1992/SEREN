@@ -30,7 +30,6 @@ SUBROUTINE sph_update
 
   debug2("Calculating SPH quantities [sph_update.F90]")
 
-
 ! Prepare list of particles which are on an acceleration step
 ! ----------------------------------------------------------------------------
   allocate(acclist(1:ptot))

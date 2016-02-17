@@ -14,6 +14,9 @@ SUBROUTINE initialize_sph_variables_2
   use hydro_module
   use scaling_module
   use type_module
+#ifdef SINK_PROPERTIES_FIX
+  use filename_module, only : out_file_form
+#endif
   use time_module
   use neighbour_module
   use timing_module
@@ -25,12 +28,16 @@ SUBROUTINE initialize_sph_variables_2
   use mhd_module
 #endif
 #if defined(RAD_WS)
-  use Eos_module, only : column2,fcolumn
+  use Eos_module, only : column2,fcolumn,idens,itemp
 #endif
   implicit none
 
 #if defined(RAD_WS)
   integer :: p               ! Particle counter
+ real(kind=PR) :: dt                 ! Timestep
+  real(kind=PR) :: dt_new             ! Latest timestep
+  real(kind=PR) :: dt_old             ! Previous timestep
+  real(kind=PR) :: mu_bar_p           ! Mean gas particle mass for p
 #endif
 #if defined(SINKS)
   integer :: s               ! Sink counter
@@ -39,22 +46,29 @@ SUBROUTINE initialize_sph_variables_2
   debug2("Initializing variables [initialize_variables_2.F90]")
 
 
-! Set initial column densities
+! Calculate flux-limited diffusion terms
 ! ----------------------------------------------------------------------------
 #if defined(RAD_WS)
   do p=pgasstart,pgasend
+        call find_idens(rho(p),idens(p))
+        call find_itemp(temp(p),itemp(p))
 #if defined(RAD_WS_SINK_POT)
      column2(p) = (fcolumn**2)*gpot(p)*rho(p)
 #else
      column2(p) = (fcolumn**2)*sphgpot(p)*rho(p)
 #endif
-     call find_equilibrium_temp_ws(p)
-  end do
+#if defined(DIFFUSION)
+   du_dt_diff(p)=0.0_PR
 #endif
+ call find_equilibrium_temp_ws(p)
+ 
+ end do
+#endif
+! ----------------------------------------------------------------------------
 
 
 ! Record 'old' particle properties for integration scheme
-! ----------------------------------------------------------------------------
+!! ----------------------------------------------------------------------------
   r_old(1:NDIM,1:ptot)  = parray(1:NDIM,1:ptot)
   v_old(1:VDIM,1:ptot)  = v(1:VDIM,1:ptot)
   rho_old(1:ptot)       = rho(1:ptot)
@@ -100,9 +114,43 @@ SUBROUTINE initialize_sph_variables_2
         sink(s)%dmdt               = 0.0_DP
         sink(s)%angmom(1:3)        = 0.0_DP
         sink(s)%angmomnet(1:3)     = 0.0_DP
+        sink(s)%Mstar              = 0.0_DP
+        sink(s)%dmdt_star          = 0.0_DP
+#ifdef EPISODIC_ACCRETION
+       sink(s)%dmdt_0             = 0.0_DP
+       sink(s)%Mdisc              = 0.0_DP
+#endif
      end do
   end if
+
+#ifdef SINK_PROPERTIES_FIX
+! read in sink properties and calculate accretion history from sink files
+
+#ifndef SINK_PROPERTIES_SYNC
+if (restart) then
+  if (out_file_form=="dragon_form" .or. out_file_form=="df".or.&
+      out_file_form=="dragon_unform" .or. out_file_form=="du") then
+     do s=1,stot
+        call read_sink_data(s)
+     end do
+  endif
+endif
+
 #endif
+#endif
+#endif
+
+#ifdef SINK_PROPERTIES_SYNC
+ if (out_file_form=="dragon_form" .or. out_file_form=="df".or.&
+      out_file_form=="dragon_unform" .or. out_file_form=="du") then
+     do s=1,stot
+        call read_sink_data_sync(s)
+     end do
+  endif
+stop
+#endif
+
+
 
 ! Set accdo to FALSE since we have already calculated the initial 
 ! accelerations for integration schemes which require them.

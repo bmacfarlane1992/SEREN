@@ -1,3 +1,4 @@
+
 ! READ_DATA_DRAGON_FORM.F90
 ! C. P. Batty & D. A. Hubber - 8/12/2006
 ! Reads in initial conditions file in DRAGON ASCII format.  
@@ -12,7 +13,9 @@ SUBROUTINE read_data_dragon_form(in_file)
   use type_module
   use sink_module
   use time_module
+use filename_module, only: restart_log,run_id,run_dir
   implicit none
+
 
   character(len=*), intent(in) :: in_file    ! formatted DRAGON snapshot
 
@@ -30,9 +33,15 @@ SUBROUTINE read_data_dragon_form(in_file)
 #if defined(SINKS)
   integer :: s                               ! sink counter
 #endif
+
+ logical :: findid=.TRUE.             		    ! true when we need to assign particle identifiers
+
   real(kind=PR) :: raux
 
   debug1("Reading in formatted data file : "//trim(in_file)//" [read_data_dragon_form.F90]")
+
+! check to see if restart file exists
+  restart_log = trim(adjustl(run_dir))//trim(adjustl(run_id))//".restart"
 
 ! Initialise counters
   pboundary = 0
@@ -66,6 +75,7 @@ SUBROUTINE read_data_dragon_form(in_file)
   mgas_orig = real(rdata(50),DP)
 
   allocate(ptype(1:ptot))
+
 
 ! First pass to get numbers of particles of each type
 ! ----------------------------------------------------------------------------
@@ -123,6 +133,17 @@ SUBROUTINE read_data_dragon_form(in_file)
      read(1,*) rdata(p)
   end do
 
+
+
+
+#if defined(PARTICLE_ID)
+
+  inquire(file=restart_log,exist=findid)
+
+#endif
+
+
+
 ! Positions
 ! ----------------------------------------------------------------------------
   boundaryslot = 1
@@ -140,25 +161,29 @@ SUBROUTINE read_data_dragon_form(in_file)
 #endif
      if (ptype(p) == 6) then
         parray(1:NDIM,boundaryslot) = rdata(1:NDIM)
-        porig(boundaryslot) = p
+        if (.not. findid) porig(boundaryslot) = p
         boundaryslot = boundaryslot + 1
      else if (ptype(p) == 9) then
         parray(1:NDIM,icmslot) = rdata(1:NDIM)
-        porig(icmslot) = p
+         if (.not. findid) porig(icmslot) = p
         icmslot = icmslot + 1
      else if (ptype(p) == 1) then
         parray(1:NDIM,gasslot) = rdata(1:NDIM)
-        porig(gasslot) = p
+         if (.not. findid) porig(gasslot) = p
         gasslot = gasslot + 1
      else if (ptype(p) == 10) then
         parray(1:NDIM,cdmslot) = rdata(1:NDIM)
-        porig(cdmslot) = p
+         if (.not. findid) porig(cdmslot) = p
         cdmslot = cdmslot + 1
      else if (ptype(p) == -1) then
         sink(sinkslot)%r(1:NDIM) = rdata(1:NDIM)
         sinkslot = sinkslot + 1
+        ! no porig for sinks
      end if
+
   end do
+
+
 
 ! Velocities
 ! ----------------------------------------------------------------------------
@@ -294,6 +319,47 @@ SUBROUTINE read_data_dragon_form(in_file)
         sinkslot = sinkslot + 1
      end if
   end do
+
+
+#if defined(PARTICLE_ID)
+
+ if (findid) then 
+! Particle Types
+! ----------------------------------------------------------------------------
+  do p=1,(ptot + (stot + pdead))
+     read(1,*) idata(1)    
+  end do
+
+! Particle ids
+! ----------------------------------------------------------------------------
+  boundaryslot = 1
+  icmslot = pboundary + 1
+  gasslot = pboundary + picm + 1
+  cdmslot = pboundary + picm + pgas + 1
+  sinkslot = 1
+  do p=1,(ptot + (stot + pdead))
+     read(1,*) idata(1)
+     if (ptype(p) == 6) then
+        porig(boundaryslot) = idata(1)
+        boundaryslot = boundaryslot + 1
+     else if (ptype(p) == 9) then
+        porig(icmslot) = idata(1)
+        icmslot = icmslot + 1
+     else if (ptype(p) == 1) then
+        porig(gasslot) = idata(1)
+        gasslot = gasslot + 1
+     else if (ptype(p) == 10) then
+        porig(cdmslot) = idata(1)
+        cdmslot = cdmslot + 1
+     else if (ptype(p) == -1) then
+        sinkslot = sinkslot + 1
+        ! no porig for sinks (equal to zero)
+     end if
+  end do
+
+endif 
+
+#endif
 
 ! Close file once finished
   close(1)

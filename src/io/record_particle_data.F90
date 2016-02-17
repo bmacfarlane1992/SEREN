@@ -279,9 +279,9 @@ SUBROUTINE record_particle_data(p,nelements,alldata,rorigin)
 ! Radiative transfer routines
 #if defined(RAD_WS) && defined(DEBUG_RAD) 
   nelements = nelements + 1
-  alldata(nelements) = rad_info(1,p)*real(kappascale,PR)
+  alldata(nelements) = rad_info(1,p)*(kappascale*kappacgs) 
   nelements = nelements + 1
-  alldata(nelements) = rad_info(2,p)*real(kappascale,PR)
+  alldata(nelements) = rad_info(2,p)*(kappascale*kappacgs) 
   nelements = nelements + 1
   alldata(nelements) = rad_info(3,p)
   nelements = nelements + 1
@@ -304,6 +304,16 @@ SUBROUTINE record_particle_data(p,nelements,alldata,rorigin)
   nelements = nelements + 1
   alldata(nelements) = &
        &rad_info(10,p)*real(Escale*Ecgs/tscale/tcgs/mscale/mcgs,PR)
+  nelements = nelements + 1
+  alldata(nelements) = rad_info(11,p)
+  nelements = nelements + 1
+  alldata(nelements) = dt_therm(p)*tscale
+  nelements = nelements + 1
+  alldata(nelements) = ueq(p)*real(Escale*Ecgs/mscale/mcgs,PR)
+  nelements = nelements + 1
+  alldata(nelements) = u(p)*real(Escale*Ecgs/mscale/mcgs,PR)
+
+
 #endif
   
 ! Flux-limited diffusion info
@@ -316,6 +326,8 @@ SUBROUTINE record_particle_data(p,nelements,alldata,rorigin)
   alldata(nelements) = du_dt_diff(p)*Escale/tscale
   nelements = nelements + 1
   alldata(nelements) = k_cond(p)*Escale*Ecgs/rscale/rcgs/tscale
+  nelements = nelements + 1
+  alldata(nelements) = lambda_diff(p)
 #endif
   
 #if defined(DEBUG_SINK_BOUNDARY_PROPERTIES)

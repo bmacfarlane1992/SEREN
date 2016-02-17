@@ -98,6 +98,7 @@ SUBROUTINE allocate_memory
 #if defined(DIFFUSION)
      allocate(du_dt_diff(1:pmax))
      allocate(k_cond(1:pmax))
+     allocate(lambda_diff(1:pmax))
 #endif
 #if defined(DEBUG_DUDTRAD)
      allocate(dudt_rad(1:pmax))
@@ -230,7 +231,7 @@ SUBROUTINE allocate_memory
      allocate(dt_therm(1:pmax))
      allocate(ueq(1:pmax))
 #if defined(DEBUG_RAD)
-     allocate(rad_info(1:10,ptot))
+     allocate(rad_info(1:12,ptot))
 #endif
 #endif
 

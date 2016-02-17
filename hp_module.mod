@@ -1,0 +1,239 @@
+GFORTRAN module version '10' created from /home/ben/Documents/WORK_PLANETS/PROJECTS/FUORS/GENERATE/seren/src/headers/modules.F90
+MD5:5b6e63428df650fc8cdaeffed8fe7f7b -- If you edit this, you'll get what you deserve.
+
+(() () () () () () () () () () () () () () () () () () () () () () ()
+() () () ())
+
+()
+
+()
+
+()
+
+()
+
+()
+
+(2 '__convert_i2_i4' '(intrinsic)' '' 1 ((PROCEDURE UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 FUNCTION ELEMENTAL PURE) (INTEGER 4 0 0
+0 INTEGER ()) 0 0 () () 2 () () () 0 0)
+3 'a_star' 'hp_module' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () () 0 () () () 0
+0)
+4 'definitions' 'definitions' '' 1 ((MODULE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN UNKNOWN 0 0) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () () 0 () () () 0
+0)
+5 'deg2rad' 'healpix_types' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () (CONSTANT (
+REAL 8 0 0 0 REAL ()) 0 '0.477d1a894a74e4@-1') () 0 () () () 0 0)
+6 'dp' 'definitions' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () (
+CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '8') () 0 () () () 0 0)
+7 'dpc' 'healpix_types' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () (
+CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '8') () 0 () () () 0 0)
+8 'f1' 'hp_module' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
+9 'f2' 'hp_module' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
+10 'f3' 'hp_module' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
+11 'f4' 'hp_module' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
+12 'filenamelen' 'healpix_types' '' 1 ((PARAMETER UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
+() (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1024') () 0 () () () 0 0)
+13 'fourpi' 'healpix_types' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () (CONSTANT (
+REAL 8 0 0 0 REAL ()) 0 '0.c90fdaa22168c0@1') () 0 () () () 0 0)
+14 'halfpi' 'healpix_types' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () (CONSTANT (
+REAL 8 0 0 0 REAL ()) 0 '0.1921fb54442d18@1') () 0 () () () 0 0)
+15 'healpix_types' 'healpix_types' '' 1 ((MODULE UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN UNKNOWN 0 0) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () ()
+0 () () () 0 0)
+16 'healpix_version' 'healpix_types' '' 1 ((PARAMETER UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (CHARACTER 1 0 0 0 CHARACTER ((
+CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '5'))) 0 0 () (CONSTANT (
+CHARACTER 1 0 0 0 CHARACTER (())) 0 5 '2.12a') () 0 () () () 0 0)
+17 'hp_ionize' 'hp_module' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (LOGICAL 4 0 0 0 LOGICAL ()) 0 0 () () 0 () ()
+() 0 0)
+18 'hp_module' 'hp_module' '' 1 ((MODULE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN UNKNOWN 0 0) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () () 0 () () () 0
+0)
+19 'hpmaxres' 'hp_module' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () () 0 () () () 0
+0)
+20 'hptot' 'hp_module' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () () 0 () ()
+() 0 0)
+21 'hpx_dbadval' 'healpix_types' '' 1 ((PARAMETER UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () (
+CONSTANT (REAL 8 0 0 0 REAL ()) 0 '-0.14ab0c40c8402c@26') () 0 () () ()
+0 0)
+22 'hpx_sbadval' 'healpix_types' '' 1 ((PARAMETER UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (REAL 4 0 0 0 REAL ()) 0 0 () (
+CONSTANT (REAL 4 0 0 0 REAL ()) 0 '-0.14ab0c4@26') () 0 () () () 0 0)
+23 'huge' '(intrinsic)' '' 1 ((PROCEDURE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN UNKNOWN 0 0 FUNCTION) (REAL 4 0 0 0 REAL ()) 0 0 () () 23 () ()
+() 0 0)
+24 'i1b' 'healpix_types' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () (
+CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') () 0 () () () 0 0)
+25 'i2b' 'healpix_types' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () (
+CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '2') () 0 () () () 0 0)
+26 'i4b' 'healpix_types' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () (
+CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '4') () 0 () () () 0 0)
+27 'i8b' 'healpix_types' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () (
+CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '8') () 0 () () () 0 0)
+28 'ilp' 'definitions' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () (
+CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '8') () 0 () () () 0 0)
+29 'imax' 'hp_module' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () () 0 () ()
+() 0 0)
+30 'intmax' 'hp_module' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () () 0 () () () 0
+0)
+31 'ionizedo' 'hp_module' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0 ALLOCATABLE DIMENSION) (LOGICAL 4 0 0 0
+LOGICAL ()) 0 0 () (1 0 DEFERRED () ()) 0 () () () 0 0)
+32 'kind' '(intrinsic)' '' 1 ((PROCEDURE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN UNKNOWN 0 0 FUNCTION) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () () 32
+() () () 0 0)
+33 'kvs' 'healpix_types' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () (CONSTANT (
+REAL 8 0 0 0 REAL ()) 0 '0.10000000000000@1') () 0 () () () 0 0)
+34 'lgt' 'healpix_types' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () (
+CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '4') () 0 () () () 0 0)
+35 'lmax_hp' 'hp_module' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () () 0 () ()
+() 0 0)
+36 'ltot_hp' 'hp_module' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () () 0 () ()
+() 0 0)
+37 'max_dp' 'healpix_types' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () (CONSTANT (
+REAL 8 0 0 0 REAL ()) 0 '0.fffffffffffff8@256') () 0 () () () 0 0)
+38 'max_i1b' 'healpix_types' '' 1 ((PARAMETER UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
+() (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '127') () 0 () () () 0 0)
+39 'max_i2b' 'healpix_types' '' 1 ((PARAMETER UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
+() (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '32767') () 0 () () () 0 0)
+40 'max_i4b' 'healpix_types' '' 1 ((PARAMETER UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
+() (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '2147483647') () 0 () () ()
+0 0)
+41 'max_i8b' 'healpix_types' '' 1 ((PARAMETER UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 8 0 0 0 INTEGER ()) 0 0
+() (CONSTANT (INTEGER 8 0 0 0 INTEGER ()) 0 '9223372036854775807') () 0
+() () () 0 0)
+42 'max_sp' 'healpix_types' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (REAL 4 0 0 0 REAL ()) 0 0 () (CONSTANT (
+REAL 4 0 0 0 REAL ()) 0 '0.ffffff0@32') () 0 () () () 0 0)
+43 'n_lyc' 'hp_module' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () () 0 () () () 0
+0)
+44 'newtemp' 'hp_module' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0 ALLOCATABLE DIMENSION) (INTEGER 4 0 0 0
+INTEGER ()) 0 0 () (1 0 DEFERRED () ()) 0 () () () 0 0)
+45 'ns_max' 'healpix_types' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () (
+CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '8192') () 0 () () () 0 0)
+46 'pi' 'healpix_types' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () (CONSTANT (
+REAL 8 0 0 0 REAL ()) 0 '0.3243f6a8885a30@1') () 0 () () () 0 0)
+47 'pix2x' 'hp_module' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (INTEGER 4 0 0 0 INTEGER ()) 0 0 ()
+(1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '0') (CONSTANT (
+INTEGER 4 0 0 0 INTEGER ()) 0 '1023')) 0 () () () 0 0)
+48 'pix2y' 'hp_module' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (INTEGER 4 0 0 0 INTEGER ()) 0 0 ()
+(1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '0') (CONSTANT (
+INTEGER 4 0 0 0 INTEGER ()) 0 '1023')) 0 () () () 0 0)
+49 'pr' 'definitions' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () (
+CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '8') () 0 () () () 0 0)
+50 'qp' 'definitions' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () (
+CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '16') () 0 () () () 0 0)
+51 'quartpi' 'healpix_types' '' 1 ((PARAMETER UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () (
+CONSTANT (REAL 8 0 0 0 REAL ()) 0 '0.c90fdaa22168c0@0') () 0 () () () 0
+0)
+52 'rad2deg' 'healpix_types' '' 1 ((PARAMETER UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () (
+CONSTANT (REAL 8 0 0 0 REAL ()) 0 '0.394bb834c783f0@2') () 0 () () () 0
+0)
+53 'rstatic' 'hp_module' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0
+EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
+INTEGER 4 0 0 0 INTEGER ()) 0 '3')) 0 () () () 0 0)
+54 'selected_int_kind' '(intrinsic)' '' 1 ((PROCEDURE UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 FUNCTION) (REAL 4 0 0 0 REAL ()) 0 0 ()
+() 54 () () () 0 0)
+55 'selected_real_kind' '(intrinsic)' '' 1 ((PROCEDURE UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 FUNCTION) (REAL 4 0 0 0 REAL ()) 0 0 ()
+() 55 () () () 0 0)
+56 'sp' 'definitions' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () (
+CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '4') () 0 () () () 0 0)
+57 'spc' 'healpix_types' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () (
+CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '4') () 0 () () () 0 0)
+58 'sq4pi_inv' 'healpix_types' '' 1 ((PARAMETER UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () (
+CONSTANT (REAL 8 0 0 0 REAL ()) 0 '0.48375d410a6db4@0') () 0 () () () 0
+0)
+59 'sqrt2' 'healpix_types' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () (CONSTANT (
+REAL 8 0 0 0 REAL ()) 0 '0.16a09e667f3bcd@1') () 0 () () () 0 0)
+60 'tion' 'hp_module' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () () 0 () () () 0
+0)
+61 'tneut' 'hp_module' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () () 0 () () () 0
+0)
+62 'twopi' 'healpix_types' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () (CONSTANT (
+REAL 8 0 0 0 REAL ()) 0 '0.6487ed5110b460@1') () 0 () () () 0 0)
+63 'twothird' 'healpix_types' '' 1 ((PARAMETER UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () (
+CONSTANT (REAL 8 0 0 0 REAL ()) 0 '0.aaaaaaaaaaaaa8@0') () 0 () () () 0
+0)
+64 'x2pix' 'hp_module' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (INTEGER 4 0 0 0 INTEGER ()) 0 0 ()
+(1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
+INTEGER 4 0 0 0 INTEGER ()) 0 '128')) 0 () () () 0 0)
+65 'xfrac' 'hp_module' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () () 0 () () () 0
+0)
+66 'y2pix' 'hp_module' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (INTEGER 4 0 0 0 INTEGER ()) 0 0 ()
+(1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
+INTEGER 4 0 0 0 INTEGER ()) 0 '128')) 0 () () () 0 0)
+67 'yfrac' 'hp_module' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () () 0 () () () 0
+0)
+)
+
+('__convert_i2_i4' 0 2 'a_star' 0 3 'definitions' 0 4 'deg2rad' 0 5 'dp'
+0 6 'dpc' 0 7 'f1' 0 8 'f2' 0 9 'f3' 0 10 'f4' 0 11 'filenamelen' 0 12
+'fourpi' 0 13 'halfpi' 0 14 'healpix_types' 0 15 'healpix_version' 0 16
+'hp_ionize' 0 17 'hp_module' 0 18 'hpmaxres' 0 19 'hptot' 0 20
+'hpx_dbadval' 0 21 'hpx_sbadval' 0 22 'huge' 0 23 'i1b' 0 24 'i2b' 0 25
+'i4b' 0 26 'i8b' 0 27 'ilp' 0 28 'imax' 0 29 'intmax' 0 30 'ionizedo' 0
+31 'kind' 0 32 'kvs' 0 33 'lgt' 0 34 'lmax_hp' 0 35 'ltot_hp' 0 36
+'max_dp' 0 37 'max_i1b' 0 38 'max_i2b' 0 39 'max_i4b' 0 40 'max_i8b' 0
+41 'max_sp' 0 42 'n_lyc' 0 43 'newtemp' 0 44 'ns_max' 0 45 'pi' 0 46
+'pix2x' 0 47 'pix2y' 0 48 'pr' 0 49 'qp' 0 50 'quartpi' 0 51 'rad2deg' 0
+52 'rstatic' 0 53 'selected_int_kind' 0 54 'selected_real_kind' 0 55 'sp'
+0 56 'spc' 0 57 'sq4pi_inv' 0 58 'sqrt2' 0 59 'tion' 0 60 'tneut' 0 61
+'twopi' 0 62 'twothird' 0 63 'x2pix' 0 64 'xfrac' 0 65 'y2pix' 0 66
+'yfrac' 0 67)

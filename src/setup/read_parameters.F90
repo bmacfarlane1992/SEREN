@@ -89,6 +89,7 @@ SUBROUTINE read_parameters(filename)
 
 10 close (1)
 
+
 ! Now check through parameters to make sure all have been read
   do i=1,nparams
      if (.not. params(i)%done) then
@@ -98,7 +99,6 @@ SUBROUTINE read_parameters(filename)
      end if
   end do
   if (.not. alldone) stop
-
 
   return
 END SUBROUTINE read_parameters

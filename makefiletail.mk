@@ -36,6 +36,12 @@ SPH_SIMULATION          := $(strip $(SPH_SIMULATION))
 NBODY_SPH_SIMULATION    := $(strip $(NBODY_SPH_SIMULATION))
 NBODY_SIMULATION        := $(strip $(NBODY_SIMULATION))
 SPH                     := $(strip $(SPH))
+ANALYSE                 := $(strip $(ANALYSE))
+SPH_SPECIFIC_OUTPUT     := $(strip $(SPH_SPECIFIC_OUTPUT))
+SPH_OUTPUT_DENS	        := $(strip $(SPH_OUTPUT_DENS))
+SPH_OUTPUT_TEMP	        := $(strip $(SPH_OUTPUT_TEMP))
+SINK_PROPERTIES_FIX     := $(strip $(SINK_PROPERTIES_FIX))
+EPISODIC_ACCRETION      :=$(strip $(EPISODIC_ACCRETION))
 SPH_INTEGRATION         := $(strip $(SPH_INTEGRATION))
 KERNEL                  := $(strip $(KERNEL))
 HFIND                   := $(strip $(HFIND))
@@ -49,6 +55,7 @@ FLUX_LIMITED_DIFFUSION  := $(strip $(FLUX_LIMITED_DIFFUSION))
 IONIZING_RADIATION      := $(strip $(IONIZING_RADIATION))
 RIEMANN_SOLVER          := $(strip $(RIEMANN_SOLVER))
 ARTIFICIAL_VISCOSITY    := $(strip $(ARTIFICIAL_VISCOSITY))
+VISCOSITY_RECEEDING     := $(strip $(VISCOSITY_RECEEDING))
 VISC_TD                 := $(strip $(VISC_TD))
 BALSARA                 := $(strip $(BALSARA))
 PATTERN_REC             := $(strip $(PATTERN_REC))
@@ -60,7 +67,9 @@ EXTERNAL_FORCE          := $(strip $(EXTERNAL_FORCE))
 GRAVITY                 := $(strip $(GRAVITY))
 EWALD                   := $(strip $(EWALD))
 REMOVE_OUTLIERS         := $(strip $(REMOVE_OUTLIERS))
+PARTICLE_ID       	:= $(strip $(PARTICLE_ID))
 SINKS                   := $(strip $(SINKS))
+KILLING_SINKS		:= $(strip $(KILLING_SINKS))
 SINK_RADIUS             := $(strip $(SINK_RADIUS))
 SINK_REMOVE_ANGMOM      := $(strip $(SINK_REMOVE_ANGMOM))
 NBODY_INTEGRATION       := $(strip $(NBODY_INTEGRATION))
@@ -93,7 +102,7 @@ IO_OBJ += read_data.o write_data.o
 IO_OBJ += write_rad_ws_test_data.o
 IC_OBJ = ic_subroutines.o velfield.o
 GENERIC_OBJ += allocate_memory.o clean_up.o COM.o distance3.o distance3_dp.o
-GENERIC_OBJ += heapsort.o insertion_sort.o remove_from_list.o reorder_array.o
+GENERIC_OBJ += heapsort.o insertion_sort.o remove_from_list.o reorder_array.o 
 
 
 # User object files (Include your own object files here)
@@ -364,7 +373,7 @@ endif
 ifeq ($(SPH_SIMULATION),1)
 CFLAGS += -DSPH_SIMULATION
 OBJ += sph_simulation.o sph_setup.o sph_integrate.o
-OBJ += sph_output.o sph_timesteps.o
+OBJ += sph_output.o sph_timesteps.o syncronise.o
 SETUP_OBJ += initialize_sph_variables_1.o initialize_sph_variables_2.o
 INCLUDE_SPH_OBJS = 1
 else ifneq ($(SPH_SIMULATION),0)
@@ -496,6 +505,9 @@ ifeq ($(THERMAL),ISOTHERMAL)
 CFLAGS += -DISOTHERMAL
 else ifeq ($(THERMAL),BAROTROPIC)
 CFLAGS += -DBAROTROPIC
+else ifeq ($(THERMAL),LOCAL_ISOTHERMAL)
+CFLAGS += -DLOCAL_ISOTHERMAL
+SPH_OBJ += ambienttemp.o 
 else ifeq ($(THERMAL),POLYTROPIC)
 CFLAGS += -DPOLYTROPIC
 else ifeq ($(THERMAL),STIFF)
@@ -513,11 +525,11 @@ else ifeq ($(THERMAL),ENERGY_EQN)
 CFLAGS += -DINTERNAL_ENERGY
 else ifeq ($(THERMAL),ENTROPY_EQN)
 CFLAGS += -DENTROPIC_FUNCTION -DINTERNAL_ENERGY
-
+aa
 else ifeq ($(THERMAL),RAD_WS)
 CFLAGS += -DRAD_WS -DRAD -DINTERNAL_ENERGY -DU_IMPLICIT_SOLVER
 SPH_OBJ += rad_ws_update.o find_equilibrium_temp_ws.o 
-SPH_OBJ += read_cooling_table_ws.o ambienttemp.o
+SPH_OBJ += read_cooling_table_ws.o ambienttemp.o 
 ifeq ($(FLUX_LIMITED_DIFFUSION),1)
 CFLAGS += -DDIFFUSION
 SPH_OBJ += conductivity.o diffusion.o
@@ -527,6 +539,9 @@ CFLAGS += -DAMBIENT_HEATING -DCONST_HEATING
 endif
 ifeq ($(SINK_HEATING_WS),HDISC_HEATING)
 CFLAGS += -DHDISC_HEATING
+endif
+ifeq ($(SINK_HEATING_WS),HDISC_HEATING_PLUS_STAR_SIMPLE_HEATING)
+CFLAGS += -DHDISC_HEATING_PLUS_STAR_SIMPLE_HEATING
 endif
 ifeq ($(SINK_HEATING_WS),HDISC_HEATING_3D_SINGLE)
 CFLAGS += -DHDISC_HEATING_3D_SINGLE
@@ -594,6 +609,9 @@ ERROR += "Invalid ARTIFICIAL_VISCOSITY option selected : "$(ARTIFICIAL_VISCOSITY
 endif
 
 ifneq ($(ARTIFICIAL_VISCOSITY),0)
+ifeq ($(VISCOSITY_RECEEDING),1)
+CFLAGS += -DVISCOSITY_RECEEDING
+endif
 ifeq ($(VISC_TD),1)
 CFLAGS += -DVISC_TD
 else ifneq ($(VISC_TD),0)
@@ -833,10 +851,13 @@ else ifneq ($(SPH_INTEGRATION),0)
 ERROR += "Invalid SPH_INTEGRATION option selected : "$(SPH_INTEGRATION)"\n"
 endif
 
+ifeq ($(KILLING_SINKS),1)
+CFLAGS +=-DKILLING_SINKS
+endif
+
 ifeq ($(SINKS),SMOOTH_ACC)
 CFLAGS += -DSMOOTH_ACCRETION -DMINIMUM_H
-SPH_OBJ += create_sink.o smooth_accrete_particles.o
-SPH_OBJ += sink_accretion_properties.o
+SPH_OBJ += create_sink.o smooth_accrete_particles.o sink_accretion_properties.o
 else
 SPH_OBJ += create_sink.o accrete_particles.o sink_accretion_properties.o
 endif
@@ -863,6 +884,25 @@ endif
 endif
 endif
 
+# Reconstruct sink properties from dragon format files
+# ----------------------------------------------------------------------------
+ifneq ($(SINKS),0)
+ifeq ($(SINK_PROPERTIES_FIX),1)
+CFLAGS += -DSINK_PROPERTIES_FIX
+OBJ +=read_sink_data.o
+endif
+endif
+
+# Sink episodic accretion
+# ----------------------------------------------------------------------------
+ifneq ($(SINKS),0)
+ifneq ($(SINK_HEATING_WS),0)
+ifeq ($(EPISODIC_ACCRETION),1)
+CFLAGS +=-DEPISODIC_ACCRETION -DSINK_PROPERTIES_FIX
+OBJ +=episodic_accretion_model.o
+endif
+endif
+endif
 
 # Check neighbour's timesteps
 # ----------------------------------------------------------------------------
@@ -973,6 +1013,14 @@ ERROR += "Invalid REMOVE_OUTLIERS option selected : "$(REMOVE_OUTLIERS)"\n"
 endif
 
 
+# Use particle ids
+# ----------------------------------------------------------------------------
+ifeq ($(PARTICLE_ID),1)
+CFLAGS += -DPARTICLE_ID
+else ifneq ($(PARTICLE_ID),0)
+ERROR += "Invalid PARTICLE_ID option selected : "$(PARTICLE_ID)"\n"
+endif
+
 # Sorting algorithm
 # ----------------------------------------------------------------------------
 ifeq ($(SORT),INSERTION)
@@ -1028,7 +1076,7 @@ endif
 # Test flags and routines
 # ----------------------------------------------------------------------------
 ifeq ($(TEST),SPIEGEL)
-CFLAGS += -DSPIEGEL_TEST
+CFLAGS += -DSPIEGEL_TEST -DSPIEGEL_DISPERSION 
 else ifeq ($(TEST),FREEFALL)
 CFLAGS += -DFREEFALL_TEST
 else ifeq ($(TEST),BINARY)
@@ -1053,6 +1101,52 @@ else ifeq ($(DEBUG),3)
 CFLAGS += -DDEBUG1 -DDEBUG2 -DDEBUG3
 else ifneq ($(DEBUG),0)
 ERROR += "Invalid value for DEBUG\n"
+endif
+
+# SPECIFIC_OUTPUT flags
+# ----------------------------------------------------------------------------
+ifeq ($(SPH_SPECIFIC_OUTPUT),1)
+CFLAGS += -DSPH_SPECIFIC_OUTPUT
+ifeq ($(SPH_OUTPUT_DENS),1)
+CFLAGS += -DSPH_OUTPUT_DENS
+endif
+ifeq ($(SPH_OUTPUT_TEMP),1)
+CFLAGS += -DSPH_OUTPUT_TEMP
+endif
+USER_SUB += sph_specific_output.o
+endif
+
+# ANALYSING flags
+# ----------------------------------------------------------------------------
+ifneq ($(ANALYSE),0)
+CFLAGS += -DANALYSE
+endif
+ifeq ($(ANALYSE),1)
+CFLAGS += -DANALYSE_DISC							# creates
+USER_SUB += analyse_disc.o							 
+endif
+ifeq ($(ANALYSE),2)
+CFLAGS += -DANALYSE_CENTRAL_REGION 
+CFLAGS += -DANALYSE_CENTRAL_REGION_PROPERTIES 					# creates TD.dat file
+USER_SUB += analyse_central_region.o
+endif
+ifeq ($(ANALYSE),3)
+CFLAGS += -DANALYSE_CENTRAL_REGION 	
+CFLAGS += -DANALYSE_CENTRE_AROUND_DENSEST 					# creates .cnt file
+USER_SUB += analyse_central_region.o
+endif
+ifeq ($(ANALYSE),4)
+CFLAGS += -DANALYSE_CENTRAL_REGION
+CFLAGS += -DANALYSE_CENTRAL_REGION_PROPERTIES -DANALYSE_CENTRE_AROUND_DENSEST	# creates TD.dat and cnt. file
+USER_SUB += analyse_central_region.o
+endif
+ifeq ($(ANALYSE),5)
+CFLAGS += -DSINK_PROPERTIES_SYNC
+USER_SUB +=read_sink_data_sync.o
+endif
+ifeq ($(ANALYSE),6)
+CFLAGS += -DANALYSE_DISC -DPLANET_IN_DISC							# creates
+USER_SUB += analyse_disc.o							 
 endif
 
 
@@ -1172,6 +1266,20 @@ radial_average :: $(OBJ) radial_average.o
 ic_subdisk :: $(OBJ) ic_subdisk.o
 	$(F90) $(OPT) $(CFLAGS) -o $(EXEDIR)/ic_subdisk $(OBJ) ic_subdisk.o
 
+analysedisc :: $(OBJ) seren.o
+	$(F90) $(OPT) $(CFLAGS)  -o $(EXEDIR)/analysedisc $(OBJ) seren.o
+
+analysetd :: $(OBJ) seren.o
+	$(F90) $(OPT) $(CFLAGS)  -o $(EXEDIR)/analysetd $(OBJ) seren.o
+
+analysecnt ::  $(OBJ) seren.o
+	$(F90) $(OPT) $(CFLAGS)  -o $(EXEDIR)/analysecnt $(OBJ)  seren.o
+
+analysetdcnt :: $(OBJ) seren.o
+	$(F90) $(OPT) $(CFLAGS)  -o $(EXEDIR)/analysetdcnt $(OBJ)  seren.o
+
+syncsinks :: $(OBJ) seren.o
+	$(F90) $(OPT) $(CFLAGS)  -o $(EXEDIR)/syncsinks $(OBJ)  seren.o
 
 # User makefile additions
 # ----------------------------------------------------------------------------

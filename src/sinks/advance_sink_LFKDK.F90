@@ -40,6 +40,7 @@ SUBROUTINE advance_sink_leapfrog_kdk
 !  nfull       = nstep_sinks
   nhalf       = nfull / 2
   dt          = real(timestep,PR)*real(dn,PR)
+  sink_dt     =dt
   dt_half     = real(timestep,PR)*real(dn - nhalf,PR)
 
 

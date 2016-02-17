@@ -1,0 +1,13 @@
+#!/bin/bash
+echo "hello, $USER. will try to run anafile for all sfs"
+
+for X in $1*  
+do
+/home/spxstd/seren/analysetdcnt $X 
+echo ""
+echo "done file: $X"
+echo ""
+done
+
+echo "======== DONE! ============"
+

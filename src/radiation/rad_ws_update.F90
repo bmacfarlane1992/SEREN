@@ -22,6 +22,7 @@ SUBROUTINE rad_ws_update
   integer :: p                        ! particle counter
   integer, allocatable :: acclist(:)  ! List of particles on acc. step
   real(kind=PR) :: dt                 ! Timestep
+  real(kind=PR) :: dt_min             ! Timestep
   real(kind=PR) :: dt_new             ! Latest timestep
   real(kind=PR) :: dt_old             ! Previous timestep
   real(kind=PR) :: mu_bar_p           ! Mean gas particle mass for p
@@ -36,7 +37,8 @@ SUBROUTINE rad_ws_update
 ! an acceleration step, and then parallelize over that list.
   acctot = 0
   allocate(acclist(1:ptot))
-  do p=pgasstart,pgasend
+!  do p=pgasstart,pgasend
+  do p=1,pgasend
      if (accdo(p)) then
         acctot = acctot + 1
         acclist(acctot) = p
@@ -66,11 +68,13 @@ SUBROUTINE rad_ws_update
 
 ! Calculate itemp, idens and column density to infinity of all particles
 ! ----------------------------------------------------------------------------
+#if defined(DIFFUSION)
   if (acctot > 0) then
-     !$OMP PARALLEL DO SCHEDULE(DYNAMIC,chunksize) DEFAULT(SHARED) &
-     !$OMP PRIVATE(p,dt,dt_old,dt_new)
+    !$OMP PARALLEL DO SCHEDULE(DYNAMIC,chunksize) DEFAULT(SHARED) &
+    !$OMP PRIVATE(p,dt,dt_old,dt_new)
      do i=1,acctot
         p = acclist(i)
+
         dt_old = real(laststep(p),PR)
         dt_new = real(2**(level_step - nlevel(p)),PR)*real(timestep,PR)
 #if defined(EULER) || defined(LEAPFROG_KDK) 
@@ -80,26 +84,48 @@ SUBROUTINE rad_ws_update
 #elif defined(LEAPFROG_DKD) || defined(PREDICTOR_CORRECTOR)
         dt = 0.5_PR*(dt_old + dt_new)
 #endif
-#if defined(DIFFUSION)
         call diffusion(p,dt)
-#endif
-        call find_equilibrium_temp_ws(p)
      end do
      !$OMP END PARALLEL DO
   end if
+#endif
 ! ----------------------------------------------------------------------------
+
+! calculate minimum timestep
+
+ !    dt_min = BIG_NUMBER_DP
+      
+      ! Loop over all hydro and gas particles and find ideal time steps,
+      ! and also the minimum of all particle timesteps
+      ! ----------------------------------------------------------------------
+ !    !$OMP PARALLEL DO DEFAULT(SHARED) REDUCTION(MIN:dt_min) PRIVATE(dt)
+ !    do p=1,ptot
+ !       call timestep_size(p,dt)
+ !       dt_min = min(dt,dt_min)
+ !    end do
+ !   !$OMP END PARALLEL DO
 
 
 ! Perform implicit integration of internal energy
 ! ----------------------------------------------------------------------------
-!$OMP PARALLEL DO SCHEDULE(DYNAMIC,chunksize) DEFAULT(SHARED) &
-!$OMP PRIVATE(dn,dt,mu_bar_p) 
+!!$OMP PARALLEL DO SCHEDULE(DYNAMIC,chunksize) DEFAULT(SHARED) &
+!!$OMP PRIVATE(dn,dt,mu_bar_p) 
+
+
+    !$OMP PARALLEL DO SCHEDULE(DYNAMIC,chunksize) DEFAULT(SHARED) &
+    !$OMP PRIVATE(dn,dt,mu_bar_p) 
+
   do p=pgasstart,pgasend
+
+
+    if (accdo(p)) call find_equilibrium_temp_ws(p)
+
 
      ! Calculate time since last force computation.
      dn = n - nlast(p)
      dt = real(timestep,PR)*real(dn,PR)
-     
+
+
 #if defined(IONIZING_UV_RADIATION)
      if (temp(p) < temp_min(p)) then
         temp(p) = temp_min(p)
@@ -111,7 +137,7 @@ SUBROUTINE rad_ws_update
 #endif
      
      ! Perform implicit integration depending on timestep.
-     if (dt_therm(p) <= SMALL_NUMBER) then
+     if (dt_therm(p) <= 0) then
         u(p) = u_old(p)
      else if (dt < 40.0_PR*dt_therm(p)) then
         u(p) = u_old(p)*exp(-dt/dt_therm(p)) &
@@ -129,7 +155,6 @@ SUBROUTINE rad_ws_update
   end do
 !$OMP END PARALLEL DO
 ! ----------------------------------------------------------------------------
-
 
   deallocate(acclist)
 

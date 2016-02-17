@@ -133,6 +133,26 @@ SUBROUTINE write_makefile_options(unitno)
   write(unitno,'(A)') "NBODY_SIMULATION            = 0"
 #endif
 
+#if defined(SPH_SPECIFIC_OUTPUT)
+  write(unitno,'(A)') "SPH_SPECIFIC_OUTPUT         = 1"
+
+#if defined(SPH_OUTPUT_DENS)
+ write(unitno,'(A)') "SPH_OUTPUT_DENS         = 1"
+#else
+write(unitno,'(A)') "SPH_OUTPUT_DENS         = 0"
+#endif
+
+#if defined(SPH_OUTPUT_TEMP)
+ write(unitno,'(A)') "SPH_OUTPUT_TEMP         = 1"
+#else
+write(unitno,'(A)') "SPH_OUTPUT_TEMP         = 0"
+#endif
+
+#else
+  write(unitno,'(A)') "SPH_SPECIFIC_OUTPUT         = 0"
+#endif
+
+
 #if defined(GRAD_H_SPH)
   write(unitno,'(A)') "SPH                         = GRAD_H_SPH"
 #else
@@ -185,6 +205,8 @@ SUBROUTINE write_makefile_options(unitno)
 
 #if defined(ISOTHERMAL)
   write(unitno,'(A)') "THERMAL                     = ISOTHERMAL"
+#elif defined(LOCAL_ISOTHERMAL)
+  write(unitno,'(A)') "THERMAL                     = LOCAL_ISOTHERMAL"
 #elif defined(BAROTROPIC)
   write(unitno,'(A)') "THERMAL                     = BAROTROPIC"
 #elif defined(STIFF)
@@ -193,6 +215,7 @@ SUBROUTINE write_makefile_options(unitno)
   write(unitno,'(A)') "THERMAL                     = POLYTROPIC"
 #elif defined(RAD_WS)
   write(unitno,'(A)') "THERMAL                     = RAD_WS"
+
 #elif defined(ENTROPIC_FUNCTION)
   write(unitno,'(A)') "THERMAL                     = ENTROPIC_EQN"
 #elif defined(INTERNAL_ENERGY)
@@ -213,12 +236,14 @@ SUBROUTINE write_makefile_options(unitno)
 
 #if defined(RAD_WS) && defined(HDISC_HEATING)
   write(unitno,'(A)') "SINK_HEATING_WS             = HDISC_HEATING"
+#elif defined(HDISC_HEATING_PLUS_STAR_SIMPLE_HEATING)
+  write(unitno,'(A)') "SINK_HEATING_WS             = HDISC_HEATING_PLUS_STAR_SIMPLE_HEATING"
 #elif defined(RAD_WS) && defined(HDISC_HEATING_3D_SINGLE)
   write(unitno,'(A)') "SINK_HEATING_WS             = HDISC_HEATING_3D_SINGLE"
 #elif defined(RAD_WS) && defined(STAR_HEATING)
   write(unitno,'(A)') "SINK_HEATING_WS             = STAR_HEATING"
-#elif defined(RAD_WS) && defined(SIMPLE_STAR_HEATING)
-  write(unitno,'(A)') "SINK_HEATING_WS             = SIMPLE_STAR_HEATING"
+#elif defined(RAD_WS) && defined(STAR_SIMPLE_HEATING)
+  write(unitno,'(A)') "SINK_HEATING_WS             = STAR_SIMPLE_HEATING"
 #else
   write(unitno,'(A)') "SINK_HEATING_WS             = 0"
 #endif
@@ -249,6 +274,12 @@ SUBROUTINE write_makefile_options(unitno)
   write(unitno,'(A)') "ARTIFICIAL_VISCOSITY        = MON97"
 #else
   write(unitno,'(A)') "ARTIFICIAL_VISCOSITY        = 0"
+#endif
+
+#if defined(ARTIFICIAL_VISCOSITY) && defined(VISCOSITY_RECEEDING)
+  write(unitno,'(A)') "VISCOSITY_RECEEDING         = 1"
+#else
+  write(unitno,'(A)') "VISCOSITY_RECEEDING         = 0"
 #endif
 
 #if defined(ARTIFICIAL_VISCOSITY) && defined(VISC_TD)
@@ -331,6 +362,14 @@ SUBROUTINE write_makefile_options(unitno)
   write(unitno,'(A)') "REMOVE_OUTLIERS             = 0"
 #endif
 
+#if defined(PARTICLE_ID)
+  write(unitno,'(A)') "PARTICLE_ID             = 1"
+#else
+  write(unitno,'(A)') "PARTICLE_ID             = 0"
+#endif
+
+
+
 #if defined(GRAVITY) && defined(SINKS) && defined(SMOOTH_ACC)
   write(unitno,'(A)') "SINKS                       = SMOOTH_ACC"
 #elif defined(GRAVITY) && defined(SINKS) && defined(NO_ACCRETION)
@@ -339,6 +378,12 @@ SUBROUTINE write_makefile_options(unitno)
   write(unitno,'(A)') "SINKS                       = SIMPLE"
 #else
   write(unitno,'(A)') "SINKS                       = 0"
+#endif
+
+#if defined(KILLING_SINKS)
+  write(unitno,'(A)') "KILLING_SINKS            = 1"
+#else
+  write(unitno,'(A)') "KILLING_SINKS             = 0"
 #endif
 
 #if defined(GRAVITY) && defined(SINKS) && defined(FIXED_ABSOLUTE_SINKRAD)
@@ -465,6 +510,16 @@ SUBROUTINE write_makefile_options(unitno)
   write(unitno,'(A)') "TEST                        = 0"
 #endif
 
+#if defined(EPISODIC_ACCRETION)  
+  write(unitno,'(A)') "EPISODIC_ACCRETION          = 1"
+#else
+  write(unitno,'(A)') "EPISODIC_ACCRETION          = 0"
+#endif
+#if defined(SINK_PROPERTIES_FIX)  
+  write(unitno,'(A)') "SINK_PROPERTIES_FIX          = 1"
+#else
+  write(unitno,'(A)') "SINK_PROPERTIES_FIX          = 0"
+#endif
 
   return
 END SUBROUTINE write_makefile_options

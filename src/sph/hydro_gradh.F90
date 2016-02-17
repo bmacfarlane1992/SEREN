@@ -212,13 +212,24 @@ SUBROUTINE hydro_gradh(p)
 #if defined(ARTIFICIAL_VISCOSITY) || defined(ARTIFICIAL_CONDUCTIVITY)
      rhomean = 0.5_PR*(rho_p + rho_pp)
 
+#if defined(VISCOSITY_RECEEDING)
+      if (1>0.0_PR) then
+	if (dvdr > 0.0_PR) then 
+	  beta=0.0_PR
+	else 
+	beta=2.0_PR*alpha
+	endif 
+  ! Add artificial viscosity if particles are approaching/receeding
+#else
      ! Only add artificial viscosity if particles are approaching
      if (dvdr < 0.0_PR) then
 
+     beta=2.0_PR*alpha
+#endif
         ! Calculate effective value of alpha for viscosity 
         ! (i.e. time-dependent viscosity term plus Balsara switch)
 #if defined(ARTIFICIAL_VISCOSITY) && defined(VISC_TD) && defined(VISC_BALSARA)
-        alpha_mean = 0.25_PR*(talpha_p + talpha(pp))*(balsara_p + balsara(pp))
+        alpha_mean = 0.5_PR*(talpha_p + talpha(pp))
 #elif defined(ARTIFICIAL_VISCOSITY) && defined(VISC_TD)
         alpha_mean = 0.5_PR*(talpha_p + talpha(pp))
 #elif defined(ARTIFICIAL_VISCOSITY) && defined(VISC_BALSARA)
@@ -234,7 +245,7 @@ SUBROUTINE hydro_gradh(p)
         vsignal = 0.5_PR*(sound_p + sound(pp))
         mu = 0.5_PR*(hp + hpp)*dvdr / &
              &(drmag*drmag + 0.25_PR*ETA_SQD*(hp + hpp)*(hp + hpp))
-        visc_factor = (-alpha_mean*vsignal*mu+2.0_PR*alpha_mean*mu*mu)/rhomean
+        visc_factor = (-alpha_mean*vsignal*mu+beta*mu*mu)/rhomean
         ahydro_diss(1:NDIM) = ahydro_diss(1:NDIM) + &
              & mpp*visc_factor*wmean*dr_unit(1:NDIM)
 #elif defined(ARTIFICIAL_VISCOSITY) && defined(VISC_MON97)
@@ -250,7 +261,9 @@ SUBROUTINE hydro_gradh(p)
         dudt_diss = dudt_diss - 0.5_PR*mpp*alpha_mean*drmag*invdrmag* &
              &vsignal*wmean*(dot_product(dv,dr_unit)**2)/rhomean
 #endif
+
      end if
+
 
      ! Artificial conductivity term
 #if defined(INTERNAL_ENERGY) && defined(ARTIFICIAL_CONDUCTIVITY)
@@ -287,10 +300,16 @@ SUBROUTINE hydro_gradh(p)
 #endif
 
 ! Record artificial viscosity variables
-#if defined(ARTIFICIAL_VISCOSITY) && defined(VISC_TD)
+
+#if defined(ARTIFICIAL_VISCOSITY) && defined(VISC_TD) && defined(BALSARA)
+  dalpha_dt(p) = (C_1*(alpha_min - talpha(p))*sound_p*invhp) + &
+       & max(-div_v(p),0.0_PR)*balsara(p)*(alpha - talpha(p))
+#elif defined(ARTIFICIAL_VISCOSITY) && defined(VISC_TD)
   dalpha_dt(p) = (C_1*(alpha_min - talpha(p))*sound_p*invhp) + &
        & max(-div_v(p),0.0_PR)*(alpha - talpha(p))
 #endif
+
+
 
 ! Dissipation terms in entropy formulation
 ! ----------------------------------------------------------------------------

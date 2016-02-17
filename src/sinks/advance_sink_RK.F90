@@ -30,7 +30,7 @@ SUBROUTINE advance_sink_RK
   nfull = 2**(level_step - nlevel_sinks)
   nhalf = nfull / 2
   dt    = real(timestep,PR)*real(dn,PR)
-
+  sink_dt     =dt
 
 ! Loop over all sink particles 
 ! ----------------------------------------------------------------------------

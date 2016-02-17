@@ -42,6 +42,7 @@ SUBROUTINE get_neib(p)
 
   debug3("Obtaining neighbour list [get_neib.F90] for particle ", p)
 
+
 ! Make local copies of particle position and smoothing length
   rp(1:NDIM) = parray(1:NDIM,p)
   hrangesqd_p = KERNRANGESQD*parray(SMOO,p)*parray(SMOO,p)

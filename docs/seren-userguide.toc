@@ -1,0 +1,40 @@
+\contentsline {section}{\numberline {1}Overview}{2}
+\contentsline {section}{\numberline {2}Using SEREN }{4}
+\contentsline {subsection}{\numberline {2.1}Obtaining SEREN via git}{4}
+\contentsline {subsection}{\numberline {2.2}Compiling and running SEREN }{4}
+\contentsline {subsubsection}{\numberline {2.2.1}Command-line arguments}{4}
+\contentsline {subsubsection}{\numberline {2.2.2}Restarting simulations}{5}
+\contentsline {subsection}{\numberline {2.3}Makefile}{6}
+\contentsline {subsection}{\numberline {2.4}Debug flags}{11}
+\contentsline {subsection}{\numberline {2.5}Parameter file}{13}
+\contentsline {section}{\numberline {3}Generating initial conditions}{16}
+\contentsline {subsection}{\numberline {3.1}ic\_BB}{16}
+\contentsline {subsection}{\numberline {3.2}ic\_core}{17}
+\contentsline {subsection}{\numberline {3.3}ic\_jeans}{17}
+\contentsline {subsection}{\numberline {3.4}ic\_KH}{17}
+\contentsline {subsection}{\numberline {3.5}ic\_lattice\_cube}{18}
+\contentsline {subsection}{\numberline {3.6}ic\_NTSI}{18}
+\contentsline {subsection}{\numberline {3.7}ic\_polytrope}{19}
+\contentsline {subsection}{\numberline {3.8}ic\_radtest}{19}
+\contentsline {subsection}{\numberline {3.9}ic\_random\_cube}{20}
+\contentsline {subsection}{\numberline {3.10}ic\_replicate\_cubes}{20}
+\contentsline {subsection}{\numberline {3.11}ic\_RT}{21}
+\contentsline {subsection}{\numberline {3.12}ic\_sedov}{22}
+\contentsline {subsection}{\numberline {3.13}ic\_shocktube}{23}
+\contentsline {subsection}{\numberline {3.14}ic\_sphere}{24}
+\contentsline {subsection}{\numberline {3.15}ic\_vel\_pert.F90}{25}
+\contentsline {section}{\numberline {4}Running the SEREN bash test script}{26}
+\contentsline {section}{\numberline {5}Coding style of SEREN }{27}
+\contentsline {subsection}{\numberline {5.1}Design philosophy of SEREN }{27}
+\contentsline {subsection}{\numberline {5.2}Macros}{27}
+\contentsline {subsubsection}{\numberline {5.2.1}Function-like macros}{27}
+\contentsline {subsection}{\numberline {5.3}Real variable types}{28}
+\contentsline {subsection}{\numberline {5.4}Particle data arrays}{28}
+\contentsline {subsection}{\numberline {5.5}Particle types}{28}
+\contentsline {section}{\numberline {6}Units}{30}
+\contentsline {section}{\numberline {7}File formats}{33}
+\contentsline {section}{\numberline {8}Structure of code}{33}
+\contentsline {subsection}{\numberline {8.1}Basic directory structure}{33}
+\contentsline {section}{\numberline {9}Variable conventions}{34}
+\contentsline {subsection}{\numberline {9.1}Integer variables}{34}
+\contentsline {subsection}{\numberline {9.2}Real variables}{34}

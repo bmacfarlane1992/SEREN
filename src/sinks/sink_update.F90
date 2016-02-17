@@ -20,7 +20,8 @@ SUBROUTINE sink_update
 
 ! Remove particles that are now bound to sink particles.
 ! Ensure accretion only occurs at the end of a full sink timestep.
-  if (n == nlast_sinks .and. stot > 0) call accrete_particles
+
+ if (n == nlast_sinks .and. stot > 0) call accrete_particles
 
   return
 END SUBROUTINE sink_update

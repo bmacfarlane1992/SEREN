@@ -39,7 +39,9 @@ use particle_module
 
 ! Writing compiler flags and parameters to file for record
   store_file = trim(adjustl(run_dir))//trim(adjustl(run_id))//".params"
+#ifndef ANALYSE
   call paramstore(store_file)
+#endif
 
 ! Setting up variables for different particle types
   call types

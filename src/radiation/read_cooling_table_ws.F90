@@ -10,6 +10,7 @@
 SUBROUTINE read_cooling_table_ws
   use hydro_module
   use Eos_module
+  use Filename_module, only : eos_opa_file
   use scaling_module
   use constant_module, only : m_sun,kappa_const
 #if defined(SPIEGEL_TEST)
@@ -21,8 +22,9 @@ SUBROUTINE read_cooling_table_ws
   integer :: i                   ! Density grid counter 
   integer :: j                   ! Temperature grid counter
   real(kind=DP) :: auxscale      ! Aux. scaling variable
-  real(kind=PR) :: rdummy6(1:6)  ! Dummy array for reading arrays
-  
+  real(kind=PR) :: rdummy7(1:7)  ! Dummy array for reading arrays
+  character(len=256) :: junkstring  !Junk string variable
+
   debug1("Reading in eos tables [read_eos.F90]")
 
 ! Auxilary scaling variable for specific energy
@@ -30,51 +32,60 @@ SUBROUTINE read_cooling_table_ws
 
 ! Open and read opacity tables (if the file exists)
 ! ----------------------------------------------------------------------------
-  inquire(file='eos.dat',exist=ex)
+  inquire(file=eos_opa_file,exist=ex)
   if (ex) then
-     open(2,file='eos.dat',status='old',form='formatted')
+     open(2,file=eos_opa_file,status='old',form='formatted')
      
+     read(2,*) junkstring
+     read(2,*) junkstring
+     read(2,*) junkstring
+     read(2,*) junkstring
      ! Read-in dimensions of EOS table
-     read (2,*) dim_dens, dim_temp
-     
+     read (2,*) dim_dens, dim_temp, fcolumn
+
      ! Now allocate array sizes according to table dimensions
      allocate(eos_dens(1:dim_dens))
      allocate(eos_temp(1:dim_temp))
      allocate(eos_energy(dim_dens,dim_temp))
      allocate(eos_mu(dim_dens,dim_temp))  
      allocate(kappa(dim_dens,dim_temp))
+     allocate(kappar(dim_dens,dim_temp))
      allocate(kappap(dim_dens,dim_temp))
 
      ! Read-in data from eos.dat
      do i=1,dim_dens
         do j=1,dim_temp
-           read (2,*) rdummy6(1:6)
-           eos_dens(i)     = real(rdummy6(1),PR)
-           eos_temp(j)     = real(rdummy6(2),PR)
-           eos_energy(i,j) = real(rdummy6(3),PR)
-           eos_mu(i,j)     = real(rdummy6(4),PR)
-           kappa(i,j)      = real(rdummy6(5),PR)
-           kappap(i,j)     = real(rdummy6(6),PR)
+           read (2,*) rdummy7(1:7)
+
+           eos_dens(i)     = real(rdummy7(1),PR)
+           eos_temp(j)     = real(rdummy7(2),PR)
+           eos_energy(i,j) = real(rdummy7(3),PR)
+           eos_mu(i,j)     = real(rdummy7(4),PR)
+           kappa(i,j)      = z_factor*real(rdummy7(5),PR)
+	   kappar(i,j)     = z_factor*real(rdummy7(6),PR)
+           kappap(i,j)     = z_factor*real(rdummy7(7),PR)
         end do
      end do
 
      close(2)
   else
-     stop "eos.dat file not found"
+     stop "eos_opa_file not found"
   end if
 ! ----------------------------------------------------------------------------
+
 
 #ifdef SPIEGEL_TEST 
 
 #ifndef SPIEGEL_DISPERSION
-  write(*,*) "SPIEGEL_TEST: multiplying opacities by tau=",ptemp_q,&
+  write(*,*) "SPIEGEL_TEST: multiplying opacities so that  tau=",ptemp_q,&
        &"(defined as ptemp_q in params.dat)"
 !assumes an input sphere of density 1.41ee-19 g/cm3 
 ! (from Masunaga & Inutsuka test)
-    do m=1,dim_dens
-        do n=1,dim_temp
-        kappa(m,n)=kappa(m,n)*ptemp_q/4.259e-3
-        kappap(m,n)=kappap(m,n)*ptemp_q/4.259e-3
+    do i=1,dim_dens
+        do j=1,dim_temp
+        kappa(i,j)=kappa(i,j)*ptemp_q/4.259e-4
+        kappap(i,j)=kappap(i,j)*ptemp_q/4.259e-4
+        kappar(i,j)=kappar(i,j)*ptemp_q/4.259e-4
         end do
      end do
 
@@ -84,23 +95,25 @@ write(*,*) "SPIEGEL_TEST: multiplying opacities by 2.952e6*10**(-0.2*ptemp_q)(de
 
 ! Assumes an input sphere of density 1.41ee-19 g/cm3 
 ! (from Masunaga & Inutsuka test)
-   do m=1,dim_dens
-        do n=1,dim_temp
-         kappa(m,n)=kappa(m,n)*2.952e6*10**(-0.2*ptemp_q)
-         kappap(m,n)=kappap(m,n)*2.952e6*10**(-0.2*ptemp_q)
+   do i=1,dim_dens
+        do j=1,dim_temp
+         kappa(i,j)=kappa(i,j)*2.952e6*10**(-0.2*ptemp_q)
+         kappap(i,j)=kappap(i,j)*2.952e6*10**(-0.2*ptemp_q)
+         kappar(i,j)=kappar(i,j)*2.952e6*10**(-0.2*ptemp_q)
         end do
    end do
 
 #endif 
 
 #endif
-
+ 
 ! Convert arrays to code units 
   do i=1,dim_dens
      eos_dens(i) = eos_dens(i) / (rhoscale*rhocgs)
      do j=1,dim_temp
         eos_energy(i,j) = eos_energy(i,j) / auxscale
         kappa(i,j) = kappa(i,j) / (kappascale*kappacgs)
+        kappar(i,j) = kappar(i,j) / (kappascale*kappacgs)
         kappap(i,j) = kappap(i,j) / (kappascale*kappacgs)
      end do
   end do

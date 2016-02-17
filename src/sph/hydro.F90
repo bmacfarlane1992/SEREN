@@ -213,13 +213,25 @@ SUBROUTINE hydro(p)
 #if defined(ARTIFICIAL_VISCOSITY) || defined(ARTIFICIAL_CONDUCTIVITY)
      rhomean = 0.5_PR*(rho_p + rho_pp)
 
-     ! Only add artificial viscosity terms if particles are approaching
+
+#if defined(VISCOSITY_RECEEDING)
+      if (1>0.0_PR) then
+	if (dvdr > 0.0_PR) then beta=0
+	else beta=2*alpha
+  ! Add artificial viscosity if particles are approaching/receeding
+#else
+     ! Only add artificial viscosity if particles are approaching
      if (dvdr < 0.0_PR) then
+
+     beta=2*alpha
+#endif
+
+   
 
         ! Calculate effective value of alpha for viscosity 
         ! (i.e. time-dependent viscosity term plus Balsara switch)
 #if defined(ARTIFICIAL_VISCOSITY) && defined(VISC_TD) && defined(VISC_BALSARA)
-        alpha_mean = 0.25_PR*(talpha_p + talpha(pp))*(balsara_p + balsara(pp))
+       alpha_mean = 0.5_PR*(talpha_p + talpha(pp))
 #elif defined(ARTIFICIAL_VISCOSITY) && defined(VISC_TD)
         alpha_mean = 0.5_PR*(talpha_p + talpha(pp))
 #elif defined(ARTIFICIAL_VISCOSITY) && defined(VISC_BALSARA)
@@ -230,13 +242,15 @@ SUBROUTINE hydro(p)
         alpha_mean = alpha
 #endif
 
+
+
         ! Viscous pressure term 
 #if defined(ARTIFICIAL_VISCOSITY) && defined(VISC_AB)
         vsignal = 0.5_PR*(sound_p + sound(pp))
         mu = 0.5_PR*(hp + hpp)*dvdr / &
              &(drsqd + 0.25_PR*ETA_SQD*(hp + hpp)*(hp + hpp))
         visc_factor = (-alpha_mean*vsignal*mu + &
-             &2.0_PR*alpha_mean*mu*mu)/rhomean
+             &beta*mu*mu)/rhomean
         ahydro_diss(1:NDIM) = ahydro_diss(1:NDIM) + &
              & mpp*visc_factor*wmean*dr_unit(1:NDIM)
 #elif defined(ARTIFICIAL_VISCOSITY) && defined(VISC_MON97)
@@ -252,6 +266,7 @@ SUBROUTINE hydro(p)
         dudt_temp = dudt_temp - 0.5_PR*mpp*alpha_mean*invdrmag*invdrmag* &
              &vsignal*wmean*(dot_product(dv(1:NDIM),dr(1:NDIM))**2)/rhomean
 #endif
+
      end if
 
      ! Artificial conductivity term
@@ -265,7 +280,7 @@ SUBROUTINE hydro(p)
           &mpp*alpha_cond*vsignal_u*(u(p) - u(pp))*wmean/rhomean
 #endif
 
-#endif
+
      ! -----------------------------------------------------------------------
 
   end do
@@ -285,8 +300,12 @@ SUBROUTINE hydro(p)
 #endif
 
 ! Record artificial viscosity variables
-#if defined(ARTIFICIAL_VISCOSITY) && defined(VISC_TD)
-  dalpha_dt(p) = (C_1*(alpha_min - talpha(p))*sound_p/hp) + &
+
+#if defined(ARTIFICIAL_VISCOSITY) && defined(VISC_TD) && defined(BALSARA)
+  dalpha_dt(p) = (C_1*(alpha_min - talpha(p))*sound_p*invhp) + &
+       & max(-div_v(p),0.0_PR)*balsara(p)*(alpha - talpha(p))
+#elif defined(ARTIFICIAL_VISCOSITY) && defined(VISC_TD)
+  dalpha_dt(p) = (C_1*(alpha_min - talpha(p))*sound_p*invhp) + &
        & max(-div_v(p),0.0_PR)*(alpha - talpha(p))
 #endif
 

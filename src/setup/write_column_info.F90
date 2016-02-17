@@ -109,10 +109,10 @@ SUBROUTINE write_debug_column_info(unitno)
   call add_scalar_column_info(unitno,ncolumns,"agrav_rad","radial grav. acceleration")
   call add_scalar_column_info(unitno,ncolumns,"gpe","grav. pot. energy")
 #endif
-#endif
 #if defined(ARTIFICIAL_VISCOSITY)
   call add_scalar_column_info(unitno,ncolumns,"avisc_rad","radial viscous acceleration")
   call add_scalar_column_info(unitno,ncolumns,"avisc_vel","velocity viscous acceleration")
+#endif
 #endif
 #if defined(IONIZING_UV_RADIATION)
   call add_scalar_column_info(unitno,ncolumns,"drhodr","radial density gradient")
@@ -127,15 +127,20 @@ SUBROUTINE write_debug_column_info(unitno)
   call add_scalar_column_info(unitno,ncolumns,"m","mass")
   call add_scalar_column_info(unitno,ncolumns,"ptype","particle type")
 #if defined(RAD_WS) && defined(DEBUG_RAD)
-  do k=1,10
+  do k=1,11
      call add_vector_column_info(unitno,ncolumns,k,"rad_info","radiative cooling info")
   end do
+     call add_scalar_column_info(unitno,ncolumns,"dt_therm","dt_therm")
+     call add_scalar_column_info(unitno,ncolumns,"ueq","ueq")
+    call add_scalar_column_info(unitno,ncolumns,"u(p)","u(p)")
+
 #endif
 #if defined(DIFFUSION)
-  call add_scalar_column_info(unitno,ncolumns,"ueq","radial accel.")
-  call add_scalar_column_info(unitno,ncolumns,"dt_therm","tangential accel.")
-  call add_scalar_column_info(unitno,ncolumns,"du_dt_diff","radial accel.")
-  call add_scalar_column_info(unitno,ncolumns,"k_cond","tangential accel.")
+  call add_scalar_column_info(unitno,ncolumns,"ueq","ueq")
+  call add_scalar_column_info(unitno,ncolumns,"dt_therm","dt_therm")
+  call add_scalar_column_info(unitno,ncolumns,"du_dt_diff","du_dt_diff")
+  call add_scalar_column_info(unitno,ncolumns,"k_cond","k_cond")
+  call add_scalar_column_info(unitno,ncolumns,"lambda_diff","lambda_diff")
 #endif
 #if defined(DEBUG_SINK_BOUNDARY_PROPERTIES)
   call add_scalar_column_info(unitno,ncolumns,"a_rad","radial accel.")

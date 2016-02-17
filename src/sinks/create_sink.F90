@@ -183,6 +183,15 @@ SUBROUTINE create_sink(psink)
   sink(s)%ahydro(1:NDIM) = real(as_hydro(1:NDIM),PR)
 #endif
 
+  sink(s)%Mstar              = msink
+  sink(s)%dmdt_star          = sink(s)%dmdt 
+#ifdef EPISODIC_ACCRETION
+  sink(s)%dmdt_star          = 0.0_DP
+  sink(s)%dmdt_0             = 0.0_DP
+  sink(s)%Mdisc              = 0.0_DP
+  if (feedback_minmass<msink) feedback_minmass=1.1*msink ! to allow the sink to establish itself for a few steps
+#endif
+
 ! Radius and sink h are multiples of value of h of psink
   sink(s)%h              = real(INVKERNRANGE*rads,PR)
   sink(s)%radius         = real(rads,PR)
@@ -196,6 +205,7 @@ SUBROUTINE create_sink(psink)
   sink(s)%temperature    = 0.0_DP
   sink(s)%macc(1:DMDT_RANGE) = 0.0_DP
   sink(s)%tacc(1:DMDT_RANGE) = 0.0_DP
+
 #if defined(BH_TREE) && defined(GADGET_MAC)
   sink(s)%agravmag       = 0.0_DP
 #endif

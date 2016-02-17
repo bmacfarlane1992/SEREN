@@ -204,7 +204,7 @@ MODULE interface_module
      SUBROUTINE diffusion(p,dt)
        use definitions
        integer, intent(in) :: p
-       real(kind=PR), intent(in) ::dt
+       real(kind=PR), intent(in) :: dt
      END SUBROUTINE diffusion
 
      SUBROUTINE direct_sink_gravity(p,invhp,rp,agravp,potp)
@@ -358,12 +358,13 @@ MODULE interface_module
        integer, intent(out) :: pp_list(1:LISTSIZE)
      END SUBROUTINE gather_neib_on_fly
 
-     SUBROUTINE getkappa(dens,temp,idens,kappa_rosseland,kappa_planck)
+     SUBROUTINE getkappa(dens,temp,idens,kappa_mean,kappa_rosseland,kappa_planck)
        !DEC$ ATTRIBUTES FORCEINLINE :: getkappa
        use definitions
        integer, intent(in) :: idens
        real(kind=PR), intent(in)  :: temp
        real(kind=PR), intent(in) :: dens
+       real(kind=PR), intent(out) :: kappa_mean
        real(kind=PR), intent(out) :: kappa_rosseland
        real(kind=PR), intent(out) :: kappa_planck
      END SUBROUTINE getkappa
@@ -940,6 +941,57 @@ MODULE interface_module
        use definitions
        integer, intent(in) :: unitno
      END SUBROUTINE write_makefile_options
+
+
+     SUBROUTINE add_integer_parameter(param_name,ipointer,idefault)
+       use definitions
+       character(len=*), intent(in) :: param_name
+       integer, target, intent(in) :: ipointer
+       integer, intent(in) :: idefault
+     END SUBROUTINE add_integer_parameter
+
+
+  SUBROUTINE add_long_integer_parameter(param_name,ipointer,idefault)
+       use definitions
+       character(len=*), intent(in) :: param_name
+       integer(kind=ILP), target, intent(in) :: ipointer
+       integer(kind=ILP), intent(in) :: idefault
+     END SUBROUTINE add_long_integer_parameter
+
+     SUBROUTINE add_real_parameter(param_name,rpointer,rdefault)
+       use definitions
+       character(len=*), intent(in) :: param_name
+       real(kind=PR), target, intent(in) :: rpointer
+       real(kind=PR), intent(in) :: rdefault
+     END SUBROUTINE add_real_parameter
+
+     SUBROUTINE add_double_parameter(param_name,dpointer,ddefault)
+       use definitions
+       character(len=*), intent(in) :: param_name
+       real(kind=DP), target, intent(in) :: dpointer
+       real(kind=DP), intent(in) :: ddefault
+     END SUBROUTINE add_double_parameter
+
+     SUBROUTINE add_string_parameter(param_name,cpointer,cdefault)
+       use definitions
+       character(len=*), intent(in) :: param_name
+       character(len=*), target, intent(in) :: cpointer
+       character(len=*), intent(in) :: cdefault
+     END SUBROUTINE add_string_parameter
+
+     SUBROUTINE add_unit_parameter(param_name,upointer,udefault)
+       use definitions
+       character(len=*), intent(in) :: param_name
+       character(len=*), target, intent(in) :: upointer
+       character(len=*), intent(in) :: udefault
+     END SUBROUTINE add_unit_parameter
+
+     SUBROUTINE add_logical_parameter(param_name,lpointer,ldefault)
+       use definitions
+       character(len=*), intent(in) :: param_name
+       logical, target, intent(in) :: lpointer
+       logical, intent(in) :: ldefault
+     END SUBROUTINE add_logical_parameter
 
   END INTERFACE
 

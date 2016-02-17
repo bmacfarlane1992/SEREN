@@ -8,10 +8,10 @@ SRCDIR                   = $(PWD)/src
 EXEDIR                   = $(PWD)
 OPTIMISE                 = 3
 OPENMP                   = 1
-PROFILE                  = 0
-DEBUG                    = 1
+PROFILE                  = 0 
+DEBUG                    = 0 
 NDIM                     = 3
-PRECISION                = SINGLE
+PRECISION                = DOUBLE
 INFILE_FORMAT            = ALL
 OUTFILE_FORMAT           = ALL
 PERIODIC                 = 0
@@ -20,7 +20,6 @@ Y_BOUNDARY               = 0
 Z_BOUNDARY               = 0
 SPHERICAL_WALL           = 0
 CYLINDRICAL_WALL         = 0
-
 # ----------------------------------------------------------------------------
 # Simulation selection options
 # ----------------------------------------------------------------------------
@@ -31,22 +30,34 @@ NBODY_SIMULATION         = 0
 # ----------------------------------------------------------------------------
 # SPH simulation options
 # ----------------------------------------------------------------------------
-SPH                      = STANDARD
-SPH_INTEGRATION          = LFKDK
+ANALYSE			 = 1 
+# ANALYSE                : 0 Nothing to analyse
+#			   1 Analyse disc around first sink (cdisc, rdisc, pdisc files)
+#			   2 Analyse central region (TD.dat file)
+#		   	   3 Centre around densest particle (.cnt file)
+#		 	   4 Analyse central region (TD.dat file) and Centre around densest particle (.cnt file)
+#			   5 Read sink files, sync, and reduce in size (if needed)
+#			   6 Analyse disc around first sink (with a planet in the disc) PLANET_IN_DISC
+SPH_SPECIFIC_OUTPUT	 =0
+SPH_OUTPUT_DENS          =1 
+SPH_OUTPUT_TEMP	         =0
+SPH                      = GRAD_H_SPH 
+SPH_INTEGRATION          = RK
 KERNEL                   = M4TC
 HFIND                    = NUMBER
 MINIMUM_H                = 0
 HYDRO                    = 1
-THERMAL                  = RAD_WS
+THERMAL                  = RAD_WS   
 SINK_POTENTIAL_WS        = 0
 AMBIENT_HEATING_WS       = 1
-SINK_HEATING_WS          = 0
-FLUX_LIMITED_DIFFUSION   = 0
-IONIZING_RADIATION       = 0
+SINK_HEATING_WS          = STAR_SIMPLE_HEATING
+FLUX_LIMITED_DIFFUSION   = 0 
+IONIZING_RADIATION       = 0 
 RIEMANN_SOLVER           = 0
-ARTIFICIAL_VISCOSITY     = MON97
-VISC_TD                  = 0
-BALSARA                  = 0
+ARTIFICIAL_VISCOSITY     = AB
+VISCOSITY_RECEEDING	 = 0 
+VISC_TD                  = 1
+BALSARA                  = 0 
 PATTERN_REC              = 0
 ARTIFICIAL_CONDUCTIVITY  = 0
 EXTERNAL_PRESSURE        = 0
@@ -57,24 +68,29 @@ EXTERNAL_FORCE           = 0
 GRAVITY                  = KS
 EWALD                    = 0
 REMOVE_OUTLIERS          = 0
+PARTICLE_ID		 = 0
 
 # ----------------------------------------------------------------------------
 # Sink and N-body options
 # ----------------------------------------------------------------------------
-SINKS                    = SIMPLE
+SINKS                    = SIMPLE 
+KILLING_SINKS            = 0
 SINK_RADIUS              = FIXED_ABSOLUTE
-SINK_REMOVE_ANGMOM       = 0
+SINK_REMOVE_ANGMOM       = 0 
 SINK_GRAVITY_ONLY        = 0
 NBODY_INTEGRATION        = HERMITE4
 BINARY_STATS             = 0
+SINK_PROPERTIES_FIX      = 1 
 
-# ----------------------------------------------------------------------------
+EPISODIC_ACCRETION       = 1 
+
+# ------------- ---------------------------------------------------------------
 # Tree options
 # ----------------------------------------------------------------------------
 TREE                     = BH
 MULTIPOLE                = QUADRUPOLE
 MAC                      = GEOMETRIC
-REORDER                  = PARTICLES
+REORDER                  = PARTICLES 
 CELL_WALK                = 0
 
 # ----------------------------------------------------------------------------
@@ -85,7 +101,7 @@ TIMESTEP                 = RESTRICTED
 CHECK_NEIB_TIMESTEP      = 1
 SIGNAL_VELOCITY_DT       = 0
 NEIGHBOURLISTS           = 1
-TIMING_CODE              = 1
+TIMING_CODE              = 0
 DIMENSIONLESS            = 0
 TEST                     = 0
 
@@ -107,7 +123,7 @@ ifneq ($(DEBUG),0)
 #DFLAGS += -DDEBUG_CREATE_SINK
 #DFLAGS += -DDEBUG_CREATE_HP_SOURCE
 #DFLAGS += -DDEBUG_DENSITY
-DFLAGS += -DDEBUG_DIAGNOSTICS
+#DFLAGS += -DDEBUG_DIAGNOSTICS
 #DFLAGS += -DDEBUG_DIV_V
 #DFLAGS += -DDEBUG_DUDTRAD
 #DFLAGS += -DDEBUG_ENERGY_EQN
@@ -132,7 +148,7 @@ DFLAGS += -DDEBUG_DIAGNOSTICS
 #DFLAGS += -DDEBUG_MHD
 #DFLAGS += -DDEBUG_NBODYSETUP
 #DFLAGS += -DDEBUG_PARAMETERS
-DFLAGS += -DDEBUG_PLOT_DATA
+#DFLAGS += -DDEBUG_PLOT_DATA
 #DFLAGS += -DDEBUG_RAD
 #DFLAGS += -DDEBUG_REDUCE_TIMESTEP
 #DFLAGS += -DDEBUG_REMOVE_OUTLIERS
@@ -146,7 +162,7 @@ DFLAGS += -DDEBUG_PLOT_DATA
 #DFLAGS += -DDEBUG_SPH_UPDATE
 #DFLAGS += -DDEBUG_SWAP_PARTICLE_DATA
 #DFLAGS += -DDEBUG_TIMESTEP_SIZE
-DFLAGS += -DDEBUG_TRACK_ENERGY
+#DFLAGS += -DDEBUG_TRACK_ENERGY
 #DFLAGS += -DDEBUG_TRACK_PARTICLE
 #DFLAGS += -DDEBUG_TREE_BUILD
 #DFLAGS += -DDEBUG_TREE_GRAVITY
@@ -155,6 +171,7 @@ DFLAGS += -DDEBUG_TRACK_ENERGY
 #DFLAGS += -DDEBUG_TYPES
 #DFLAGS += -DDEBUG_VISC_BALSARA
 #DFLAGS += -DDEBUG_VISC_PATTERN_REC
+#DFLAGS += -DDEBUG_SMOOTH_ACCRETE_PARTICLES
 #DFLAGS += -C=all
 #DFLAGS += -C=undefined
 #DFLAGS += -Wall -ffpe-trap=invalid,zero,overflow,underflow,denormal -fbacktrace
@@ -171,7 +188,7 @@ include makefiletail.mk
 # List of possible flags for making the code
 # ----------------------------------------------------------------------------
 # F90                     : FORTRAN compiler
-#		            f95      = NAG f95 compiler
+#		            f95   STAR_SIMPLE_HEATING   = NAG f95 compiler
 #                           g95      = free f95 compiler (not gnu)
 #                           gfortran = gnu f95 compiler
 #                           pgf90    = Portland group compiler (coma)
@@ -239,7 +256,7 @@ include makefiletail.mk
 #                                        (e.g. Price & Monaghan 2005)
 #                           RPSPH      = 'Relative pressure' SPH (Abel 2010)
 
-# INTEGRATOR              : Integration scheme used
+# INTEGRATOR LFKDK             : Integration scheme used
 #                           EULER = 1st order Euler scheme
 #                           RK    = 2nd order Runge-Kutta
 #                           LFKDK = 2nd order Kick-drift-kick Leap-frog
@@ -266,6 +283,7 @@ include makefiletail.mk
 
 # THERMAL                 : Equation of state
 #                           ISOTHERMAL   = Isothermal EOS
+#                           LOCAL_ISOTHERMAL   = Isothermal EOS (fixed temp vs radius)
 #                           BAROTROPIC   = Barotropic EOS
 #                           POLYTROPIC   = Polytropic EOS
 #                           ENERGY_EQN   = Solve energy equation
@@ -291,6 +309,9 @@ include makefiletail.mk
 #                                i.e. T ~ To*(R/Ro)^(-q), 
 #                                where R is the distance in disc midplane 
 #                                (To, Ro (in AU), Tinf set in params.dat)
+# 			    HDISC_HEATING_PLUS_STAR_SIMPLE_HEATING  
+# 			    includes radiative feedback from secondary objects formed 
+#			    in the disc 
 
 # FLUX_LIMITED_DIFFUSION  : Hybrid flux-limited diffusion method (0 or 1)
 
@@ -363,7 +384,8 @@ include makefiletail.mk
 #                           NO_ACC      = Simple sinks with no accretion
 #                           SMOOTH_ACC  = Sinks with smooth accretion 
 #                                         (experimental)
-
+# KILLING_SINKS		  : 0 ACCRETION ONTO SINKS
+#			    1 NON-ACCRETING (PARTICLES DISAPPEAR FROM SIMULATION)
 # SINK_RADIUS             : Method of selecting the sink radius for new sinks
 #                           FIXED_ABSOLUTE = Absolute (constant) sink radius
 #                           FIXED_HMULT    = Multiple of h 
@@ -428,3 +450,5 @@ include makefiletail.mk
 #                           PLUMMER  = Plummer sphere stability test
 #                           ENTROPY  = Entropy-core test
 
+
+ # SINK_PROPERTIES_FIX	 :  0, 1 -- reconstruct accretion history from sink files

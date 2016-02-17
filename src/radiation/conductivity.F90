@@ -45,8 +45,8 @@ SUBROUTINE conductivity(p)
   real(kind=PR) :: radenergygrad(1:NDIM) ! radiation energy gradient
   real(kind=PR) :: R_diff                ! R diffusion term 
   real(kind=PR) :: kappaT                ! Pseudo opacity
-  real(kind=PR) :: kappa_aux             ! ..
-
+  real(kind=PR) :: kappapT               ! ..
+  real(kind=PR) :: kapparT               ! ..
 
 ! Create local copies of important properties of particle p
   rp(1:NDIM) = parray(1:NDIM,p)
@@ -83,38 +83,42 @@ SUBROUTINE conductivity(p)
      
      ! Create local copies for neighbour pp
      rho_pp  = rho(pp)
-     hpp     = parray(SMOO,pp)
-     invhpp  = 1.0_PR / hpp
-     hfactor_pp = invhpp**(NDIMPR)
      call distance2(rp(1:NDIM),pp,dr(1:NDIM),drsqd)
      drmag = sqrt(drsqd) + SMALL_NUMBER
+     if (drmag > KERNRANGE*hp) cycle
      invdrmag = 1.0_PR / drmag
      dr_unit(1:NDIM) = dr(1:NDIM)*invdrmag
      skern   = HALFKERNTOT * drmag * invhp
      kern_p  = int(skern)
      kern_p  = min(kern_p,KERNTOT)
-     skern   = HALFKERNTOT * drmag * invhpp 
-     kern_pp = int(skern)
-     kern_pp = min(kern_pp,KERNTOT)
-     
-     wmean   = 0.5_PR*(hfactor_p*invhp*w1(kern_p) + &
-          & hfactor_pp*invhpp*w1(kern_pp))
-     
-     radenergygrad(1:NDIM) = radenergygrad(1:NDIM) + (parray(MASS,pp)/rho_pp)&
-       & * (temp(pp)**4 - temp(p)**4)*wmean*dr_unit(1:NDIM)    
-     radenergy = radenergy + &
-          &(parray(MASS,pp)/rho_pp)*temp(pp)**4*hfactor_p*w0(kern_p)
+     if (kern_p < 0 .or. kern_p > KERNTOT) then
+        write(6,*) "Kernel table value too big in conductivity.F90 : ",p,i,pp,skern,kern_p,drmag,hp
+        stop
+     end if     
+     wmean   = hfactor_p*invhp*w4(kern_p)
+ 
+     radenergygrad(1:NDIM) = radenergygrad(1:NDIM) + (parray(MASS,pp)/rho_p)&
+       & *(temp(pp)**4-temp(p)**4)*wmean*dr_unit(1:NDIM)    
+  
+     radenergy = radenergy+(parray(MASS,pp)/rho_pp)*temp(pp)**4*(hfactor_p*w0(kern_p))
   end do
 ! ----------------------------------------------------------------------------
 
-  call getkappa(rho(p),temp(p),idens(p),kappaT,kappa_aux)
-  
-  R_diff = sqrt(dot_product(radenergygrad,radenergygrad)) &
-       & / radenergy/rho_p/kappaT
-  
-  k_cond(p) = 16.0_PR*rad_const*((2.0_PR + R_diff) / &
-       & (6.0_PR + 3.0_PR*R_diff + R_diff**2))*temp(p)**3/rho_p/kappaT
-  
+  call getkappa(rho(p),temp(p),idens(p),kappaT,kapparT, kappapT)
+
+!  need the self-contribution of each particle
+  radenergy = radenergy + (parray(MASS,p)/rho_p)*temp(p)**4*hfactor_p*w0(1)  
+
+  if (dot_product(radenergygrad,radenergygrad)==0) then
+  R_diff=1d40
+  else
+  R_diff = sqrt(dot_product(radenergygrad,radenergygrad))/radenergy/rho_p/kapparT
+  endif
+
+  lambda_diff(p)=((2.0_PR + R_diff)/(6.0_PR + 3.0_PR*R_diff + R_diff**2))
+
+  k_cond(p) = 16.0_PR*rad_const*lambda_diff(p)*temp(p)**3/rho_p/kapparT
+
   deallocate(pp_templist)
 
   return

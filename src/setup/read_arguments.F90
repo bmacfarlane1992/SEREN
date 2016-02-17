@@ -16,6 +16,10 @@ SUBROUTINE read_arguments
   character(len=256) :: auxstring  ! Aux. string variable
 
   narguments = command_argument_count()
+#ifdef ANALYSE
+    param_file = "params.dat"
+#else
+
   write(6,*) "No. of command line arguments : ",narguments
 
 ! Terminate program if there are too many command line arguments
@@ -69,6 +73,7 @@ SUBROUTINE read_arguments
 ! ----------------------------------------------------------------------------
 
   write(6,*) "param_file : ",trim(adjustl(param_file))
+#endif
 
   return
 END SUBROUTINE read_arguments

@@ -113,6 +113,20 @@ SUBROUTINE sph_integrate
   call sink_update
 #endif
 
+
+#if defined(STAR_SIMPLE_HEATING)
+  if (sync_flag) then	
+     call syncronise
+     sync_steps=sync_steps+1
+     if (sync_steps==10) then
+        sync_flag=.false.
+        sync_steps=0
+     endif
+  endif
+
+#endif
+
+
 ! Remove any outlying particles depending on chosen criteria.
 #if defined(REMOVE_OUTLIERS)
   call remove_outlying_particles

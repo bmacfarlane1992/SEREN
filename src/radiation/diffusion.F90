@@ -19,8 +19,7 @@ SUBROUTINE diffusion(p,dt)
   implicit none
 
   integer, intent(in) :: p               ! particle identifier
-  real(kind=PR), intent(in) ::dt         ! Timestep
-
+  real(kind=PR), intent(in) :: dt
   integer :: i                           ! neighbour counter
   integer :: kern_p                      ! kernel table element for p
   integer :: kern_pp                     ! kernel table element for p
@@ -31,12 +30,15 @@ SUBROUTINE diffusion(p,dt)
   real(kind=PR) :: drmag                 ! magnitude of separation
   real(kind=PR) :: dr_unit(1:NDIM)       ! Unit displacement vector
   real(kind=PR) :: dt_diff_pp            ! energy diff. timescale from p to pp
-  real(kind=PR) :: du_diff               ! ..
-  real(kind=PR) :: dudt_diff             ! energy diff. rate from p
+  real(kind=PR) :: dudt_diff_p          ! energy diff. rate from pp
   real(kind=PR) :: dudt_diff_pp          ! energy diff. rate from pp
+  real(kind=PR) :: du_diff_p          ! energy diff.  from pp
+  real(kind=PR) :: du_diff_pp          ! energy diff. from pp
+  real(kind=PR) :: du_p_pp
   real(kind=PR) :: hfactor_p             ! invhp ^ NDIM
   real(kind=PR) :: hfactor_pp            ! invhpp ^ NDIM
   real(kind=PR) :: hp                    ! smoothing length of particle p
+  real(kind=PR) :: hpp                    ! smoothing length of particle p
   real(kind=PR) :: invhp                 ! ( 1 / hp )
   real(kind=PR) :: invhpp                ! ( 1 / hpp )
   real(kind=PR) :: invdrmag              ! ( 1 / drmag )
@@ -48,10 +50,13 @@ SUBROUTINE diffusion(p,dt)
   real(kind=PR) :: wmean                 ! (W(p) + W(pp)) / 2
   real(kind=PR) :: kappaT                ! ..
   real(kind=PR) :: kappaT_pp             ! ..
-  real(kind=PR) :: kappa_aux             ! ..
+  real(kind=PR) :: kappapT
+  real(kind=PR) :: kappapT_pp             ! ..
+  real(kind=PR) :: kapparT               ! ..
+  real(kind=PR) :: kapparT_pp               ! ..
   real(kind=PR) :: tau_p                 ! ..
   real(kind=PR) :: tau_pp                ! ..
-
+  real(kind=PR) :: drsqd                 ! separation squared
 
 ! Create local copies of important properties of particle p
   rp(1:NDIM) = parray(1:NDIM,p)
@@ -60,6 +65,7 @@ SUBROUTINE diffusion(p,dt)
   hfactor_p  = invhp**(NDIMPR)
   vp(1:NDIM) = v(1:NDIM,p)
   rho_p      = rho(p)
+
 #if defined(NEIGHBOUR_LISTS)
   pp_numb = pptot(p)
   if (pp_numb <= pp_limit) then 
@@ -78,10 +84,8 @@ SUBROUTINE diffusion(p,dt)
 
 
 ! Initialise variables
-  dudt_diff    = 0.0_PR
-  dudt_diff_pp = 0.0_PR
-  du_diff      = 0.0_PR
-  call getkappa(rho_p,temp(p),idens(p),kappaT,kappa_aux)
+  dudt_diff_p = 0.0_PR
+  call getkappa(rho_p,temp(p),idens(p),kappaT,kapparT,kappapT)
   tau_p        = sqrt(column2(p))*kappaT
 
 
@@ -89,45 +93,82 @@ SUBROUTINE diffusion(p,dt)
 ! ----------------------------------------------------------------------------
   do i=1,pp_numb
      pp = pp_templist(i)
-     
-     ! Create local copies for neighbour pp     
-     rho_pp   = rho(pp)
-     invhpp   = 1.0_PR / parray(SMOO,pp)
-     hfactor_pp = invhpp**(NDIMPR)
-     call distance2(rp(1:NDIM),pp,dr(1:NDIM),drmag)
-     drmag    = sqrt(drmag) + SMALL_NUMBER
+
+     dudt_diff_pp = 0.0_PR
+ 
+    ! Create local copies for neighbour pp     
+     rho_pp = rho(pp)
+     hpp = parray(SMOO,pp)
+     invhpp = 1.0 / hpp
+     hfactor_pp = invhpp**(NDIM)
+     call distance2(rp,pp,dr,drsqd)
+     drmag = sqrt(drsqd) + SMALL_NUMBER
+     if (drmag > KERNRANGE*hp) cycle
+     invdrmag = 1.0 / drmag
+     dr_unit(1:NDIM) = dr(1:NDIM)*invdrmag
+     skern   = HALFKERNTOT * drmag * invhp
+     kern_p  = int(skern)
+     kern_p  = min(kern_p,KERNTOT)
+
+     skern   = HALFKERNTOT * drmag * invhpp
+     kern_pp = int(skern)
+     kern_pp = min(kern_pp,KERNTOT)
+
+     if (kern_p < 0 .or. kern_p > KERNTOT) then
+        write(6,*) "Kernel table value too big in conductivity,F90 : ",p,i,pp,skern,kern_p,drmag,hp
+        stop
+     end if     
+
+     ! Create local copies for neighbour pp
+     rho_pp  = rho(pp)
+     call distance2(rp(1:NDIM),pp,dr(1:NDIM),drsqd)
+     drmag = sqrt(drsqd) + SMALL_NUMBER
+     if (drmag > KERNRANGE*hp) cycle
      invdrmag = 1.0_PR / drmag
      dr_unit(1:NDIM) = dr(1:NDIM)*invdrmag
-     skern    = HALFKERNTOT * drmag * invhp
-     kern_p   = int(skern)
-     kern_p   = min(kern_p,KERNTOT)
-     skern    = HALFKERNTOT * drmag * invhpp 
-     kern_pp  = int(skern)
-     kern_pp  = min(kern_pp,KERNTOT)
-     call getkappa(rho(pp),temp(pp),idens(pp),kappaT_pp,kappa_aux)
+     skern   = HALFKERNTOT * drmag * invhp
+     kern_p  = int(skern)
+     kern_p  = min(kern_p,KERNTOT)
+     
+
+     wmean = 0.5*(hfactor_p*invhp*w4(kern_p) + hfactor_pp*invhpp*w4(kern_pp))
+
+     call getkappa(rho_pp,temp(pp),idens(pp),kappaT_pp,kapparT_pp,kappapT_pp)
      tau_pp   = sqrt(column2(pp))*kappaT_pp
 
-     if (0.5_PR*(tau_p + tau_pp) < 1.0_PR) then
-        du_diff = 0.0_PR
-     else
-        wmean = 0.5_PR*(hfactor_p*invhp*w1(kern_p) + &
-             &hfactor_pp*invhpp*w1(kern_pp))
 
-        ! Compute actual energy diffused between particles 
-        ! (done individualy in order to take into account
-        ! the different diffusion rates between particles)
-        dudt_diff_pp = 4.0_PR*(parray(MASS,pp)/(rho_pp*rho_p)) * &
+
+     if ((kapparT_pp*rho_pp+kapparT*rho_p)*drmag<2_PR) CYCLE 
+
+! transfer of energy from particle pp to particle p (sign is correct)
+
+     dudt_diff_pp = 4.0_PR*(parray(MASS,pp)/(rho_pp*rho_p)) * &
              &(k_cond(p)*k_cond(pp)/(k_cond(p) + k_cond(pp))) * &
              &(temp(p) - temp(pp))*wmean*invdrmag
-        du_diff = du_diff + dudt_diff_pp*dt
-     end if
-     
+
+
+! calculate diffusion timescale
+     dt_diff_pp=abs(0.5*(u(p)+u(pp))/dudt_diff_pp)
+
+ 
+! calculate energy flow to particle p assuming a constant 
+! flow rate during the dynamical timestep dt
+
+     du_diff_pp=dudt_diff_pp*dt
+
+! energy flow cannot be larger than the energy difference between the two particles
+
+     du_p_pp=0.5*(u(pp)-u(p))
+ 
+     du_diff_pp=min(abs(du_diff_pp),abs(du_p_pp))*(du_p_pp/abs(du_p_pp))
+ 
+     du_diff_p =du_diff_p+ du_diff_pp 
   end do
 ! ----------------------------------------------------------------------------
-  
-!  du_dt_diff(p) = dudt_diff
-  du_dt_diff(p) = du_diff / dt
 
+  du_dt_diff(p) = du_diff_p/dt
+
+ 
   deallocate(pp_templist)
 
   return

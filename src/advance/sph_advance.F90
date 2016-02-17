@@ -12,7 +12,7 @@ SUBROUTINE sph_advance
        &advance_leapfrog_dkd,advance_leapfrog_kdk,&
        &advance_predictor_corrector,advance_runge_kutta
   use particle_module, only : ptot
-  use type_module, only : pboundary,phydrostart
+  use type_module, only : pboundary,phydrostart,pgravitystart
   implicit none
 
   integer :: p          ! Particle counter
@@ -21,12 +21,12 @@ SUBROUTINE sph_advance
 
 ! First, 'advance' or frog-march boundary particles
 ! ----------------------------------------------------------------------------
-  if (pboundary > 0) then
-     debug2("Advancing positions of boundary particles [advance.F90]")
-     do p=1,pboundary
-        call advance_boundary_particle(p)
-     end do
-  end if
+!  if (pboundary > 0) then
+!     debug2("Advancing positions of boundary particles [advance.F90]")
+!     do p=1,pboundary
+!        call advance_boundary_particle(p)
+!     end do
+!  end if
 ! ----------------------------------------------------------------------------
 
 

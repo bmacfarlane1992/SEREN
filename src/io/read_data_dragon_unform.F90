@@ -12,6 +12,7 @@ SUBROUTINE read_data_dragon_unform(in_file)
   use type_module
   use sink_module
   use time_module
+use filename_module, only: restart_log,run_id,run_dir
   implicit none
 
   character(len=*), intent(in) :: in_file    ! unformatted DRAGON snapshot
@@ -34,7 +35,13 @@ SUBROUTINE read_data_dragon_unform(in_file)
   integer :: s                               ! sink counter
 #endif
 
+ logical :: findid=.TRUE.             		    ! true when we need to assign particle identifiers
+
   debug1("Reading in unformatted data file : "//trim(in_file)//" [read_data_dragon_unform.F90]")
+
+! check to see if restart file exists
+  restart_log = trim(adjustl(run_dir))//trim(adjustl(run_id))//".restart"
+
 
 ! Initialise counters
   pboundary = 0
@@ -113,6 +120,13 @@ SUBROUTINE read_data_dragon_unform(in_file)
   read(1) idata
   read(1) rdata
 
+#if defined(PARTICLE_ID)
+
+  inquire(file=restart_log,exist=findid)
+
+#endif
+
+
 ! Positions
 ! ----------------------------------------------------------------------------
   boundaryslot = 1
@@ -123,23 +137,25 @@ SUBROUTINE read_data_dragon_unform(in_file)
   do p=1,(ptot + (stot + pdead))
      if (ptype(p) == 6) then
         parray(1:NDIM,boundaryslot) = rdummy3(1:NDIM,p)
-        porig(boundaryslot) = p
+         if (.not. findid) porig(boundaryslot) = p
         boundaryslot = boundaryslot + 1
      end if
      if (ptype(p) == 9) then
         parray(1:NDIM,icmslot) = rdummy3(1:NDIM,p)
-        porig(icmslot) = p
+          if (.not. findid) porig(icmslot) = p
         icmslot = icmslot + 1
      end if
      if (ptype(p) == 1) then
         parray(1:NDIM,gasslot) = rdummy3(1:NDIM,p)
-        porig(gasslot) = p
+         if (.not. findid) porig(gasslot) = p
         gasslot = gasslot + 1
      end if
      if (ptype(p) == -1) then
         sink(sinkslot)%r(1:NDIM) = rdummy3(1:NDIM,p)
         sinkslot = sinkslot + 1
+        ! no porig for sinks =xero
      end if
+
   end do
 
 ! Velocities
@@ -265,6 +281,48 @@ SUBROUTINE read_data_dragon_unform(in_file)
         sinkslot = sinkslot + 1
      end if
   end do
+
+#if defined(PARTICLE_ID)
+
+ if (findid) then 
+! particle types
+! ----------------------------------------------------------------------------
+  boundaryslot = 1
+  icmslot = pboundary + 1
+  gasslot = pboundary + picm + 1
+  sinkslot = 1
+  read(1) idummy1
+
+
+! particle ids
+! ----------------------------------------------------------------------------
+   boundaryslot = 1
+  icmslot = pboundary + 1
+  gasslot = pboundary + picm + 1
+  sinkslot = 1
+  read(1) idummy1
+  do p=1,(ptot + (stot + pdead))
+     if (ptype(p) == 6) then
+        porig(boundaryslot) = idummy1(p)
+        boundaryslot = boundaryslot + 1
+     end if
+     if (ptype(p) == 9) then
+        porig(icmslot) = idummy1(p)
+        icmslot = icmslot + 1
+     end if
+     if (ptype(p) == 1) then
+        porig(gasslot) = idummy1(p)
+        gasslot = gasslot + 1
+     else if (ptype(p) == -1) then
+        sinkslot = sinkslot + 1
+        ! no porig for sinks
+     end if
+  end do
+
+endif 
+#endif
+
+
 
   ! Close file once finished
   close(1)

@@ -92,6 +92,17 @@ SUBROUTINE initialize_seren_variables_1
   end if
 
 
+#ifdef ANALYSE
+#ifndef SINK_PROPERTIES_SYNC
+! read in from command line
+  restart=.true.
+  CALL Getarg(1,restart_file)
+  in_file = restart_file
+  write(6,*) "File to be analysed: ",restart_file,in_file_form
+#endif
+#endif
+
+
 ! Initialise particle counters
 ! ----------------------------------------------------------------------------
   pboundary = 0

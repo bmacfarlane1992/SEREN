@@ -25,7 +25,7 @@ SUBROUTINE reduce_timesteps
 ! Loop over all particles and reduce the timestep of any particles if 
 ! the timesteps are synchronised.
 ! ----------------------------------------------------------------------------
-!$OMP PARALLEL DO
+!$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(p)
   do p=1,ptot
      if (nminneib(p) > level_max) then
         write(6,*) "Problem with nminneib > level_max : ",nminneib(p),level_max

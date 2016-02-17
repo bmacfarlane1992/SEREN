@@ -21,6 +21,9 @@ SUBROUTINE reduce_particle_timestep(p,lnew)
   write(6,*) "nlast :",nlast(p),"    n :",n
 #endif
 
+  r_old(1:NDIM,p) = parray(1:NDIM,p)
+  v_old(1:VDIM,p) = v(1:VDIM,p)
+
   if (n /= nlast(p)) laststep(p) = timestep*real(n - nlast(p),DP)
 
 #if defined(LEAPFROG_KDK)
@@ -29,17 +32,18 @@ SUBROUTINE reduce_particle_timestep(p,lnew)
   if (n /= nlast(p)) parray(1:NDIM,p) = &
        &r_old(1:NDIM,p) + v_half(1:NDIM,p)*real(laststep(p),PR)
 #endif
+
 #if defined(PREDICTOR_CORRECTOR)
   a_old(1:VDIM,p) = a(1:VDIM,p)
 #endif
-  r_old(1:NDIM,p) = parray(1:NDIM,p)
-  v_old(1:VDIM,p) = v(1:VDIM,p)
+ 
 #if defined(ENTROPIC_FUNCTION) && defined(INTERNAL_ENERGY)
   Aold(p) = Aent(p)
-#elif defined(INTERNAL_ENERGY) && !defined(RAD_WS)
+#elif defined(INTERNAL_ENERGY) 
   u_old(p) = u(p)
 #endif
   rho_old(p) = rho(p)
+
 #if defined(VISC_TD)
   talpha_old(p) = talpha(p)
 #endif
@@ -49,6 +53,7 @@ SUBROUTINE reduce_particle_timestep(p,lnew)
 
   if (n /= nlast(p)) nlevel(p) = lnew
   if (n /= nlast(p)) nlast(p) = n
+
 #if defined(CHECK_NEIGHBOUR_TIMESTEPS)
   nminneib(p) = lnew
 #endif

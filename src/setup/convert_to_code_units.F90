@@ -77,6 +77,7 @@ SUBROUTINE convert_to_code_units
   snaptime    = snaptime  / tscale
   sph_endtime = sph_endtime / tscale
   time        = time / tscale
+  feedback_tdelay= feedback_tdelay / tscale
 
 ! Scale N-body/SPH simulation time variables
   nbody_sph_endtime = nbody_sph_endtime / tscale
@@ -95,7 +96,14 @@ SUBROUTINE convert_to_code_units
   rspheremax = rspheremax / real(rscale,PR)
   rholost    = rholost / real(rhoscale*rhocgs,PR)
   rad_lost   = rad_lost / real(rscale,PR)
-
+  feedback_minmass = feedback_minmass/ mscale
+  star_radius=star_radius *r_sun / (rscale*r_SI)
+  BD_radius=BD_radius*r_sun/(rscale*r_SI)
+  planet_radius=planet_radius*r_sun/(rscale*r_SI)
+#if defined(EPISODIC_ACCRETION)
+  dmdt_regular = dmdt_regular /  dmdtscale
+#endif
+ 
 ! If using fixed absolute sink radius, scale variable from au to code units
 #if defined(FIXED_ABSOLUTE_SINKRAD)
   sinkrad = sinkrad * real(r_au/(rscale*r_SI),PR)

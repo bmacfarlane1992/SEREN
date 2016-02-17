@@ -87,8 +87,8 @@
 #define DEADID     0
 #define GASID      1
 #define SPLITID    4
-#define BOUNDARYID 6
-#define ICMID      9
+#define BOUNDARYID 6   
+#define ICMID      9     
 #define CDMID      10
 
 ! SPH variables
@@ -99,27 +99,27 @@
 ! Kernel variables
 ! ----------------------------------------------------------------------------
 #if defined(M4_KERNEL)
-#define KERNTOT         1000
-#define HALFKERNTOT     500.0_PR
-#define KERN_H          500.0_PR
+#define KERNTOT         10000
+#define HALFKERNTOT     5000.0_PR
+#define KERN_H          5000.0_PR
 #define KERNRANGE       2.0_PR
 #define KERNRANGESQD    4.0_PR
 #define INVKERNRANGE    0.5_PR
 #define KERNRANGE_DP    2.0_DP
 #define INVKERNRANGE_DP 0.5_DP
 #elif defined(QUINTIC_KERNEL)
-#define KERNTOT         1000
-#define HALFKERNTOT     333.0_PR
-#define KERN_H          333.0_PR
+#define KERNTOT         10000
+#define HALFKERNTOT     3333.0_PR
+#define KERN_H          3333.0_PR
 #define KERNRANGE       3.0_PR
 #define KERNRANGESQD    9.0_PR
 #define INVKERNRANGE    0.3333333333333_PR
 #define KERNRANGE_DP    3.0_DP
 #define INVKERNRANGE_DP 0.3333333333333_DP
 #elif defined(GAUSSIAN_KERNEL) && defined(GAUSSIAN_3H)
-#define KERNTOT         1000
-#define HALFKERNTOT     333.0_PR
-#define KERN_H          333.0_PR
+#define KERNTOT         10000
+#define HALFKERNTOT     3333.0_PR
+#define KERN_H          3333.0_PR
 #define KERNRANGE       3.0_PR
 #define KERNRANGESQD    9.0_PR
 #define INVKERNRANGE    0.3333333333333_PR
@@ -156,7 +156,7 @@
 #define SMAX 2000
 #define ITOT 40
 #define JTOT 120
-#define DMDT_RANGE 40
+#define DMDT_RANGE 1000
 #define NEW_SINK_RMAX 2.0_PR
 #define ANGMOMRAD 2.0_PR
 
@@ -187,8 +187,8 @@
 ! Memory macros
 ! ----------------------------------------------------------------------------
 #define PMAXMULT 1.0
-#define LISTSIZE 1024
-#define GLISTSIZE 1024
+#define LISTSIZE 10000 
+#define GLISTSIZE 10000
 
 ! Parallelisation macros
 ! ----------------------------------------------------------------------------

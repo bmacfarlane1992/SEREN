@@ -46,6 +46,7 @@ SUBROUTINE initialize_thermal_properties
 #if defined(DIFFUSION)
      du_dt_diff(p) = 0.0_PR
      k_cond(p) = 0.0_PR
+     lambda_diff(p)=0.0_PR
 #endif
      press(p) = Pconst2*temp(p)*rho(p) / &
           &eosmu(rho(p),temp(p),idens(p),itemp(p))

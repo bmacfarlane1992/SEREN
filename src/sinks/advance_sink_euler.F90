@@ -27,7 +27,7 @@ SUBROUTINE advance_sink_euler
 !  nfull = nstep_sinks
   nfull = 2**(level_step - nlevel_sinks)
   dt    = real(timestep,PR)*real(dn,PR)
-
+  sink_dt     =dt
 ! Loop over all sink particles 
 ! ----------------------------------------------------------------------------
   if (stot > 0) then

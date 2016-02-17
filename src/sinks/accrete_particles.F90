@@ -203,7 +203,9 @@ SUBROUTINE accrete_particles
         ! If bound, add particle properties to the sink and then add 
         ! particle id to list of 'dead' (i.e. accreted) particles.
         if (total_energy < 0.0_DP) then
+#if !defined(KILLING_SINKS)
            mtot_temp = mtot_temp + mp
+#endif           
            rcom_temp(1:NDIM) = rcom_temp(1:NDIM) + mp*rp(1:NDIM)
            vcom_temp(1:VDIM) = vcom_temp(1:VDIM) + mp*vp(1:VDIM)
            acom_temp(1:VDIM) = acom_temp(1:VDIM) + mp*ap(1:VDIM)
@@ -277,6 +279,13 @@ SUBROUTINE accrete_particles
         sink(s)%vold(1:VDIM)   = real(vcom_temp(1:VDIM),PR)
         sink(s)%angmom(1:3)    = sink(s)%angmom(1:3) + real(angmomsink(1:3),PR)
         sink(s)%angmomnet(1:3) = sink(s)%angmomnet(1:3) + real(angmomsink(1:3),PR)
+
+#ifdef EPISODIC_ACCRETION
+! add the mass of the accreted particles onto the sink's "disc" 
+sink(s)%Mdisc=sink(s)%Mdisc+(mtot_temp-ms)
+#endif
+
+
 #if defined(LEAPFROG_KDK)
         sink(s)%vhalf(1:VDIM)  = real(vhalf_temp(1:VDIM),PR)
 #endif

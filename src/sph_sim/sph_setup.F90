@@ -8,7 +8,7 @@
 ! ============================================================================
 SUBROUTINE sph_setup
   use time_module
-  use filename_module, only : restart
+  use filename_module, only : restart,in_file
   implicit none
 
   debug1("Setting up the SPH simulation [sph_setup.F90]")
@@ -23,6 +23,20 @@ SUBROUTINE sph_setup
 
 ! Initialize certain variables before first force calculation
   call initialize_sph_variables_1
+
+! after read in and initialization of data do the analysis (doesn't the info below)
+#ifdef ANALYSE
+#ifdef ANALYSE_PICKUP_FRAMES
+   write(*,*) "Picking up specific frames ..."
+   call analyse_disc(in_file)
+ stop
+#endif
+#ifdef ANALYSE_CENTRAL_REGION
+   write(*,*) "Analysing central region ..."
+   call analyse_central_region(in_file)
+ stop
+#endif
+#endif
 
 ! Build and stock trees for first time
   call tree_update
@@ -64,6 +78,15 @@ SUBROUTINE sph_setup
 
 ! Initialize other key variables (after initial force calculation)
   call initialize_sph_variables_2
+
+! after read in and initialization of data do the analysis (needes the above info)
+#ifdef ANALYSE
+#ifdef ANALYSE_DISC
+   write(*,*) "Analysing disc around first sink ..."
+   call analyse_disc(in_file)
+ stop
+#endif
+#endif
 
   return
 END SUBROUTINE sph_setup

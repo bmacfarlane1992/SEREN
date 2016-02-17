@@ -42,7 +42,6 @@ SUBROUTINE advance_leapfrog_kdk(p)
   nfull    = 2**(level_step - nlevel(p))
   nhalf    = nfull / 2
   dt       = real(timestep,PR)*real(dn,PR)
-  dt_half  = real(timestep,PR)*real(dn - nhalf,PR)
 
 
 ! Advance particles that are below or at the half timestep

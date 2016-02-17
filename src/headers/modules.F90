@@ -99,11 +99,14 @@ MODULE Eos_module
   real(kind=PR) :: tempmin                      ! Max. temp. in eos table
   real(kind=PR) :: tempmax                      ! Min. temp. in eos table
 
+  real(kind=PR) :: z_factor                     ! metallicity
+
   real(kind=PR), allocatable :: eos_dens(:)     ! density of EOS table
   real(kind=PR), allocatable :: eos_temp(:)     ! temperature of EOS table
   real(kind=PR), allocatable :: eos_energy(:,:) ! energy from EOS table
   real(kind=PR), allocatable :: eos_mu(:,:)     ! mu from EOS table
   real(kind=PR), allocatable :: kappa(:,:)      ! mean opacity EOS table
+  real(kind=PR), allocatable :: kappar(:,:)     ! Rosseland opacity EOS table
   real(kind=PR), allocatable :: kappap(:,:)     ! planck opacity EOS table
   real(kind=PR), allocatable :: column2(:)      ! squared column density
   real(kind=PR), allocatable :: ueq(:)          ! Equilibrium u
@@ -111,6 +114,7 @@ MODULE Eos_module
 #if defined(DEBUG_RAD)
   real(kind=PR), allocatable :: rad_info(:,:)   ! Debug info
 #endif
+
 
 END MODULE Eos_module
 
@@ -171,6 +175,9 @@ MODULE filename_module
   character(len=256) :: param_file    ! parameter file
 #if defined(DEBUG_PLOT_DATA) 
   real(kind=PR) :: rzero(1:NDIM)      ! Position of origin for debug output
+#endif
+#if defined(RAD_WS)
+ character(len=256) :: eos_opa_file   ! filename of table with eos and opacities
 #endif
 
   type seren_param                             ! Seren parameter structure
@@ -509,6 +516,7 @@ MODULE particle_module
 #if defined(DIFFUSION)
   real(kind=PR), allocatable :: du_dt_diff(:) ! diffused energy rate
   real(kind=PR), allocatable :: k_cond(:)     ! thermal conductivity
+  real(kind=PR), allocatable :: lambda_diff(:)    ! flux limiter
 #endif
 #endif
 #if defined(ENTROPIC_FUNCTION)
@@ -682,12 +690,21 @@ MODULE sink_module
                                         ! stellar radiative feeback
   real(kind=PR) :: feedback_minmass     ! Min. sink mass for switching on 
                                         ! stellar radiative feeback
+  real(kind=PR) :: star_radius          ! radius of the protostar
+  real(kind=PR) :: BD_radius          ! radius of the brown dwarfs
+  real(kind=PR) :: planet_radius          ! radius of the planets
   real(kind=DP) :: laststep_sinks       ! Previous sink timestep
   real(kind=PR) :: rhosink              ! Sink creation density
   real(kind=PR) :: sinkrad              ! Sink creation radius
   real(kind=PR) :: sink_frac            ! Frac. of gas mass in sinks
   real(kind=DP) :: smooth_accrete_frac  ! Critical mass frac. before accretion
   real(kind=DP) :: smooth_accrete_dt    ! Critical timestep before accretion
+  real(kind=DP) :: sink_dt              ! sink timestep
+#ifdef EPISODIC_ACCRETION
+     real(kind=DP) :: alpha_EA           ! episodic accretion effective viscosity alpha
+     real(kind=DP) :: dmdt_regular      ! regular accretion rate (NOT EA -- Msun/yr)
+     real(kind=DP) :: episodic_time=0.0_DP
+#endif
 
   type sink_node
      logical :: accrete                 ! Is the sink accreting particles?
@@ -709,17 +726,28 @@ MODULE sink_module
      real(kind=PR) :: gpe               ! Gravitational potential energy
      real(kind=DP) :: dmdt              ! Accretion rate
      real(kind=DP) :: luminosity        ! Luminosity from unresolved star
+     real(kind=DP) :: luminosity_old    ! Luminosity from unresolved star (previous step)
      real(kind=DP) :: temperature       ! Surface temp. of unresolved star
      real(kind=DP) :: star_radius       ! Physical radius of unresolved star
      real(kind=DP) :: macc(1:DMDT_RANGE) ! Masses accreted in previous steps
      real(kind=DP) :: tacc(1:DMDT_RANGE) ! Times of previous steps
-#if defined(SMOOTH_ACCRETION)
+     real(kind=DP) :: Mstar           ! mass of the real star
+     real(kind=DP) :: dmdt_star       ! accretion onto the real star
+#ifdef EPISODIC_ACCRETION
+     real(kind=DP) :: dmdt_0          ! initial accretion rate onto the real star
+     integer       :: accretion_flag=0  ! 1: episodic accretion is happening
+     real(kind=DP) :: Mdisc           ! mass of the disc (for the episodic accretion model)
+     real(kind=DP) :: t_episode_start ! starting time of the current episodic accretion event
+     real(kind=DP) :: t_episode_duration ! duration of the current episodic accretion event
+#endif EPISODIC_ACCRETION
+
+#if defined(SMOOTH_ACCRETION) || defined(SINK_REMOVE_ANGMOM)
      real(kind=PR) :: mmax           ! Accretion mass limit for sink
      real(kind=DP) :: trot           ! Rotational period at edge of sink
      real(kind=DP) :: tvisc          ! ..
      real(kind=DP) :: menc           ! Mass enclosed by sink (sink + gas)
 #endif
-#if defined(SMOOTH_ACCRETION) || defined(SINK_ANGMOM_REMOVE)
+#if defined(SMOOTH_ACCRETION) || defined(iINK_REMOVE_ANGMOM)
      real(kind=PR) :: cmean          ! Mean sound speed of particles in sink
 #endif
 #if defined(HEALPIX)
@@ -762,6 +790,8 @@ MODULE time_module
   integer(kind=ILP) :: nionize       ! Int. time for next HEALPix walk
   integer(kind=ILP) :: nlevels       ! Number of quantized timestep levels
   integer(kind=ILP) :: nresync       ! Integer time to resynchronise
+  logical(kind=ILP) :: sync_flag     ! Syncronise flag (sync if 1)
+  integer(kind=ILP) :: sync_steps    ! for how many steps should I sync
   integer(kind=ILP) :: nsearchnext   ! Integer time for next sink search
   integer(kind=ILP) :: nsearchstep   ! Int. time interval between sink searches
   integer(kind=ILP) :: nsinknext     ! Integer time for next sink output
@@ -795,6 +825,10 @@ MODULE time_module
   real(kind=DP) :: timestep          ! Real timestep of smallest integer step
 
   real(kind=DP) :: sph_endtime       ! End time of SPH simulation
+  real(kind=DP) :: sph_endmass       ! End gas time of SPH simulation (as a fraction of initial GAS mass)
+  real(kind=DP) :: sph_endrho        ! End rho time of SPH simulation (when max dens reaches rho)
+
+
   real(kind=DP) :: nbody_sph_endtime ! End time of N-body/SPH simulation
 
   logical, allocatable :: accdo(:)            ! Update particle properties
@@ -833,6 +867,19 @@ MODULE timing_module
 
 END MODULE timing_module
 
+! ============================================================================
+MODULE analyse_module
+  use definitions
+  implicit none
+  
+  integer :: disc_nbins                  ! number of bins to put particles when calculating azimuthal averages for discs
+  real(kind=DP) :: disc_in_radius        ! inner disc radius (AU)
+  real(kind=DP) :: disc_out_radius       ! outer disc radius (AU)
+  ! for planet discs
+  integer :: pdisc_nbins                  ! number of bins to put particles when calculating azimuthal averages for discs
+  real(kind=DP) ::pdisc_in_radius        ! inner disc radius (AU)
+  real(kind=DP) :: pdisc_out_radius       ! outer disc radius (AU)
+END MODULE analyse_module
 
 ! ============================================================================
 MODULE tree_module

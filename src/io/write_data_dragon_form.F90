@@ -161,8 +161,25 @@ SUBROUTINE write_data_dragon_form(out_file)
   end if
 #endif
 
+#ifdef PARTICLE_ID
+
+! Particle ids (porig)
+! ----------------------------------------------------------------------------
+  do p=1,ptot
+     write(1,*) porig(p)
+  end do
+#if defined(SINKS)
+  do s=1,stot
+     write(1,*) 0
+  end do
+#endif
+
+#endif 
+
 ! Close file once finished
   close(1)
+
+
 
   return
 END SUBROUTINE write_data_dragon_form

@@ -159,6 +159,7 @@ SUBROUTINE sanitycheck
 ! ----------------------------------------------------------------------------
   if (rseed < 1) call paramerror("rseed < 1")
   if (sph_endtime < 0.0_DP) call paramerror("sph_endtime < 0")
+  if (sph_endmass < 0.0_DP) call paramerror("sph_endmass < 0")
   if (firstsnap < 0.0_DP) call paramerror("firstsnap < 0")
   if (snaptime <= 0.0_DP) call paramerror("snaptime <= 0")
   if (ntempstep < 1) call paramerror("ntempstep < 1")

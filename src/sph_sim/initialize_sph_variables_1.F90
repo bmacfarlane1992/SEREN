@@ -116,6 +116,8 @@ SUBROUTINE initialize_sph_variables_1
 ! Tree-building, stocking and ionization time variables
   nbuild = nsteps
   nstock = nsteps
+  sync_flag=.false.
+  sync_steps=0
   nionize = nsteps
   nionall = nsteps
 #if defined(BINARY_TREE)

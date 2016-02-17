@@ -1,0 +1,183 @@
+! analyse_disc.F90
+! D. Stamatellos 
+! Reads in a file and assuming a disc centred around the first sink 
+!	(i)   centres around the first sink and rotates disc so that xy is the disc midplane "infile.trans"
+!	(ii)  calculates disc properties (Q, T, Sigma, Omega, Mass vs radius)
+!	(iii) collective files with what happens in a given radius vs time (appends on file)
+! ============================================================================
+
+#include "macros.h"
+
+! ============================================================================
+SUBROUTINE analyse_pickup_frames(in_file)
+  use type_module
+  use particle_module
+  use hydro_module, only:temp
+  use sink_module
+  use time_module, only : time
+  use scaling_module
+  use filename_module, only :run_id,out_file_form
+
+  implicit none
+
+  character(len=40), intent(inout) :: in_file  ! snapshot name
+  character(len=40)                :: out_file  ! snapshot name
+  character(len=8)  :: file_ext   ! filename extension for data output
+
+  real(kind=PR) :: radius_in=10             	!inner radius in AU
+  real(kind=PR) :: radius_out=310               !outer radius in AU
+  integer  	:: rbins=150			!number of radial bins		
+ 
+  integer	:: i				! radial bin counter
+  integer	:: p				! particle counter
+  integer	:: s				! sink counter
+  real(kind=PR),allocatable ::radius(:)		! radius of bin
+  real(kind=PR),allocatable ::rsigma(:)		! surface density 	
+  real(kind=PR),allocatable ::rtoomre(:)	! toomre parameter
+  real(kind=PR),allocatable ::rtemp(:)		! temperature at midplane (<0.05)
+  real(kind=PR),allocatable :: rmass(:)          ! mass in rbin
+  real(kind=PR),allocatable ::romega (:)	! rotational velocity
+  real(kind=PR),allocatable ::rsound(:)		! sound speed
+  integer, allocatable  ::rparticles(:)
+  integer, allocatable  ::midplane_rparticles(:)
+  real(kind=PR) 		    ::pradius           ! distance on the disc midplane
+ 
+!constants  (cgs)
+  real(kind=DP),parameter :: mH = 1.660539D-24  ! Hydrogen mass
+  real(kind=DP),parameter :: Gconst = 6.67428D-8       ! Grav. constant
+  real(kind=DP),parameter :: kboltzmann = 1.38065D-16  ! Boltzmann constant 
+  real(kind=PR) :: r1,r2,dr,ytmp,ztmp,vytmp,vztmp,sintheta,costheta! auxiliary variables
+  
+  if (stot==0) stop
+
+! allocate arrays
+ allocate(radius(1:rbins+1))
+ allocate(rsigma(1:rbins+1))
+ allocate(rtemp(1:rbins+1)) 
+ allocate(romega(1:rbins+1))
+ allocate(rsound(1:rbins+1))
+ allocate(rtoomre(1:rbins+1))
+ allocate(rmass(1:rbins+1))
+ allocate(rparticles(1:rbins+1))
+ allocate(midplane_rparticles(1:rbins+1))
+
+! Centre around the first sink
+! particles 
+  do p=1,ptot
+   parray(1:3,p)=parray(1:3,p)-sink(1)%r(1:3)
+   v(1:3,p)=v(1:3,p)-sink(1)%v(1:3)
+  enddo
+! sinks  
+  do s=1,stot
+    sink(s)%r(1:3)=sink(s)%r(1:3)-sink(1)%r(1:3)
+    sink(s)%v(1:3)=sink(s)%v(1:3)-sink(1)%v(1:3)
+  end do
+
+
+! calculate the angle to rotate so that the disc is on xy-plane
+  costheta=abs(sink(1)%angmom(3))/sqrt(sink(1)%angmom(1)**2+sink(1)%angmom(2)**2+sink(1)%angmom(3)**2)
+  sintheta=sqrt(1-costheta**2)
+! rotate about x-axis 
+! particles 
+  do p=1,ptot
+   ytmp=parray(2,p)  
+   ztmp=parray(3,p)
+   vytmp=v(2,p)
+   vztmp=v(3,p)
+   parray(2,p)=costheta*ytmp-sintheta*ztmp
+   parray(3,p)=sintheta*ytmp+costheta*ztmp 
+   v(2,p)=costheta*vytmp-sintheta*vztmp
+   v(3,p)=sintheta*vytmp+costheta*vztmp 
+  enddo
+! sinks  
+  do s=1,stot
+  ytmp=sink(s)%r(2)  
+  ztmp=sink(s)%r(3) 
+  vytmp=v(2,p)
+  vztmp=v(3,p)
+  sink(s)%r(2)=costheta*ytmp-sintheta*ztmp
+  sink(s)%r(3)=sintheta*ytmp+costheta*ztmp 
+  sink(s)%v(2)=costheta*vytmp-sintheta*vztmp
+  sink(s)%v(3)=sintheta*vytmp+costheta*vztmp     
+  end do
+  
+  radius_in=radius_in/206265
+  radius_out=radius_out/206265
+  
+  dr=(radius_out-radius_in)/rbins
+  
+  do i=1,rbins+1
+  radius(i)=radius_in+(i-1)*dr
+  enddo
+
+!initialize
+  rtemp=0
+  rmass=0
+  rparticles=0
+  midplane_rparticles=0
+  
+
+!place into radial bins
+
+ do p=1,ptot
+ 	pradius=sqrt(parray(1,p)**2+parray(2,p)**2) 
+ 	if (pradius>radius_out+0.5*dr) CYCLE
+ 	if (parray(3,p)>0.3*pradius) CYCLE
+ 	do i=1,rbins+1
+ 		if (pradius>radius(i)-0.5*dr .and.pradius<radius(i)+0.5*dr) then
+ 	            rparticles(i)=rparticles(i)+1
+ 	            rmass(i)=rmass(i)+parray(MASS,p)*real(mscale,PR)
+ 	            if (parray(3,p)<0.05*pradius) then
+			midplane_rparticles(i)=midplane_rparticles(i)+1
+  			rtemp(i)=rtemp(i)+temp(p)
+  		    endif
+  		endif
+  	enddo		    
+ enddo
+
+!calculate radial average parameters
+
+ do i=1,rbins+1
+        r1=radius(i)-0.5*dr
+        r2=radius(i)+0.5*dr        
+	rtemp(i)=rtemp(i)/midplane_rparticles(i)
+        romega(i)=sqrt(Gconst*sink(1)%m*2d33/(radius(i)*206265*1.496d13)**3)
+        rsigma(i)=2.17d-4*rmass(i)/(3.14*(r2**2-r1**2))
+        rsound(i)=sqrt(kboltzmann*rtemp(i)/(2.3*mH))
+     	rtoomre(i)=rsound(i)*romega(i)/(3.14*Gconst*rsigma(i))
+ enddo    
+     
+     
+!output files     
+
+!collective files with what happens in a given radius vs time (appends on file)
+  do i=1,RBINS+1
+  write(file_ext,"(I3)") NINT(radius(i)*206265)
+  out_file = trim(adjustl(run_id))//".disc."//trim(adjustl(file_ext))
+  open(UNIT=1,file=out_file,form='formatted',position='append') 
+  write(1,'(7E15.7,I7)') time*tscale*1e6,radius(i)*206265,rtoomre(i),&	
+  			& rtemp(i),rsigma(i), romega(i), rmass(i), rparticles(i)
+  close(1)
+  enddo
+
+! write file with sink at the origin of the system and disc on xy-plane
+  out_file = trim(trim(adjustl(in_file))//".trans")
+
+  call write_data(out_file,out_file_form)
+
+
+! file with disc properties vs radius  
+  out_file = trim(trim(adjustl(in_file))//".disc")
+  open(UNIT=1,file=out_file,status='replace',form='formatted')
+  write(1,*)"#time(yr)/radius(AU)/ToomreQ/Temp(K)/sigma(gcm-2)/Omega/Mass(Msun)/rparticles"
+  do i=1,RBINS+1
+  write(1,'(7E15.7,I7)') time*tscale*1e6,radius(i)*206265,rtoomre(i),&	
+  			& rtemp(i),rsigma(i), romega(i), rmass(i), rparticles(i)
+  enddo			
+  close(1)
+
+
+
+
+  return
+END SUBROUTINE analyse_pickup_frames

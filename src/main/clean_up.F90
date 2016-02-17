@@ -189,6 +189,7 @@ SUBROUTINE clean_up
 #if defined(DIFFUSION)
      if (allocated(du_dt_diff)) deallocate(du_dt_diff)
      if (allocated(k_cond)) deallocate(k_cond)
+     if (allocated(lambda_diff)) deallocate(lambda_diff)
 #endif
      if (allocated(du_dt)) deallocate(du_dt)
      if (allocated(u_old)) deallocate(u_old)
