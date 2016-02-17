@@ -128,12 +128,13 @@ SUBROUTINE analyse_disc(in_file)
  real(kind=PR) :: cosphi, sinphi
  integer :: align_count
  real(kind=PR) :: sini,cosi,cosi_rotation, sini_rotation
-!
+ integer :: rot_diagn = 0				!!! Choose whether (1) or not (0) to check rotation angles
  integer :: rotate_ref = 1				!!! Define which feature rotation based on (0 for central sink, 1 for disc) 
 !
  real(kind=DP), parameter :: trestr = 1000.		!!! Set restrictive values of density and temperature
  real(kind=DP), parameter :: rhorestr = 1.E-13		!!! (in cgs) to exclude "weird" rho-T plane particles
  integer :: trho_count					!!! Counter for particles within restriction
+ integer :: trho_diagn = 0				!!! Choose whether (1) or not (0) to check rho-T plane restricted particles
 !
  real(kind=DP), parameter :: delt_r = 4.		!!! Define parameters for PV
  real(kind=DP), parameter :: delt_v = 0.5		!!! diagram
@@ -211,10 +212,6 @@ SUBROUTINE analyse_disc(in_file)
  allocate(v_kepler(1:ptot))
  allocate(smooth_av(1:ptot))
  allocate(smooth_midplane_av(1:ptot))
-
- write(*,*) sink(1)%v(1:3)
- write(*,*) sink(2)%v(1:3)
- 
 
  counter=1
 
@@ -313,9 +310,11 @@ do nsin=1,1 ! no planet in disc
 	cosphi = abs(sink(nsin)%angmom(1))/ &
 	   sqrt(sink(nsin)%angmom(1)**2+sink(nsin)%angmom(2)**2+sink(nsin)%angmom(3)**2)
 !
-	write(*,*) "Rotation taken about central sink L vector"
-	write(*,*) "Angle disc rotated about is: ", costheta / (pi / 180.)
-	write(*,*) "Angle centering onto z = 0 is: ", cosphi / (pi / 180.)
+	if (rot_diagn .eq. 1) then
+		write(*,*) "Rotation taken about central sink L vector"
+		write(*,*) "Angle disc rotated about is: ", costheta / (pi / 180.)
+		write(*,*) "Angle centering onto z = 0 is: ", cosphi / (pi / 180.)
+	endif
 !
 !							!!! Ensure rotation about y-axis 
 !							!!! is in correct direction (clockwise/anticlockwise)
@@ -357,10 +356,12 @@ do nsin=1,1 ! no planet in disc
 		cosphi = -cosphi
 	endif
 !
-	write(*,*) "Rotation taken about disc L vector"
-	write(*,*) "Count of particles in density restriction is: ", align_count
-	write(*,*) "Angle disc rotated about is: ", costheta / (pi / 180.)
-	write(*,*) "Angle centering onto z = 0 is: ", cosphi / (pi / 180.)
+	if (rot_diagn .eq. 1) then
+		write(*,*) "Rotation taken about disc L vector"
+		write(*,*) "Count of particles in density restriction is: ", align_count
+		write(*,*) "Angle disc rotated about is: ", costheta / (pi / 180.)
+		write(*,*) "Angle centering onto z = 0 is: ", cosphi / (pi / 180.)
+	endif
  endif	
 !
 !							!!! Calculate sin(theta) from trig. identity
@@ -582,11 +583,13 @@ if (counter==3) then
 
 !place into radial bins, restricting rho-T plane dependent on variables entered
 
- write(*,*) "Reference of simulation (scaled) and density/temperatures as follows"
- write(*,*) "Density [minimum, maximum, restriction]"
- write(*,*) "	", minval(rho*(rhoscale)), maxval(rho*(rhoscale)), rhorestr
- write(*,*) "Temperature [minimum, maximum, restriction]"
- write(*,*) "	", minval(temp), maxval(temp), trestr
+ if (trho_diagn .eq. 1) then
+	write(*,*) "Reference of simulation (scaled) and density/temperatures as follows"
+	write(*,*) "Density [minimum, maximum, restriction]"
+	write(*,*) "	", minval(rho*(rhoscale)), maxval(rho*(rhoscale)), rhorestr
+	write(*,*) "Temperature [minimum, maximum, restriction]"
+	write(*,*) "	", minval(temp), maxval(temp), trestr
+ endif
 !
  trho_count = 0
  do p=1,ptot
@@ -616,17 +619,16 @@ if (counter==3) then
  	 	enddo
 	endif		    
  enddo
-
- write(*,*) "Number of particles after T-rho plane restriction is: ", trho_count
+!
+ if (trho_diagn .eq. 1) then
+	write(*,*) "Number of particles after T-rho plane restriction is: ", trho_count
+ endif
 !
  if (pv_print .eq. 1) then
 !
 	allocate(pv_x(1:trho_count))								    !!! Loop over particles, if rho and T	
 	allocate(pv_y(1:trho_count))								    !!! restrictions met, output data in array
 	allocate(pv_vz(1:trho_count))								    !!! for PV diagram (raw, histogram and fit)
-
-	outfile_rawpv = trim(adjustl(in_file))//"."//trim(adjustl(out_file_form))//".raw_pv."//trim(adjustl(file_ext3))
-	open(UNIT=2,file=outfile_rawpv,form='formatted',position='append') 
 !
 	i = 1
 	do p=1,ptot
@@ -634,7 +636,6 @@ if (counter==3) then
 			pv_x(i) = parray(1,p)*rscale*206265.
 			pv_y(i) = parray(2,p)*rscale*206265.
 			pv_vz(i) = v(3,p)*vscale  
-			write(2, '(3E15.7,2X)') pv_x(i), pv_y(i), pv_vz(i)
 			i = i + 1
 		endif
 	enddo
