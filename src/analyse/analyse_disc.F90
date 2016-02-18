@@ -128,7 +128,7 @@ SUBROUTINE analyse_disc(in_file)
  real(kind=PR) :: cosphi, sinphi
  integer :: align_count
  real(kind=PR) :: sini,cosi,cosi_rotation, sini_rotation
- integer :: rot_diagn = 0				!!! Choose whether (1) or not (0) to check rotation angles
+ integer :: rot_diagn = 1				!!! Choose whether (1) or not (0) to check rotation angles
  integer :: rotate_ref = 1				!!! Define which feature rotation based on (0 for central sink, 1 for disc) 
 !
  real(kind=DP), parameter :: trestr = 1000.		!!! Set restrictive values of density and temperature
@@ -157,7 +157,7 @@ SUBROUTINE analyse_disc(in_file)
  character(len=40) :: outfile_fitpv1
  character(len=40) :: outfile_fitpv2
 !
- integer :: pv_print = 1				!!! Choose whether (1) or not (0) to generate P-V data
+ integer :: pv_print = 0				!!! Choose whether (1) or not (0) to generate P-V data
 !
  integer :: script_params = 1				!!! Choose whether (1) or not (0) parameters fed from file
 !
@@ -330,20 +330,15 @@ do nsin=1,1 ! no planet in disc
 !
 	align_count = 0
 	do p=1,ptot
-		if (rho(p)*rhoscale .gt. 1.e-12) then
+		if ( ( sqrt(parray(1,p)**2 + parray(2,p)**2 + parray(3,p)**2)*rscale*206265. .lt. 50 ) ) then		
+!		if ( ( sqrt(parray(1,p)**2 + parray(2,p)**2 + parray(3,p)**2)*rscale*206265. .lt. 50 ) .and. &
+!		   (rho(p)*rhoscale .gt. 1.e-12) ) then 
+!
 			align_count = align_count + 1
 !
-			sum_Lx = sum_Lx + parray(MASS, p)*mscale*2.e30* &
-			(v(3,p)*vscale*1000.*(parray(2,p)-sink(nsin)%r(2))*rscale*3.e+16 - &
-			v(2,p)*vscale*1000.*(parray(3,p)-sink(nsin)%r(3))*rscale*3.e+16)
-!
-			sum_Ly = sum_Ly + parray(MASS, p)*mscale*2.e30* &
-			(v(1,p)*vscale*1000.*(parray(3,p)-sink(nsin)%r(3))*rscale*3.e+16 - &
-			v(3,p)*vscale*1000.*(parray(1,p)-sink(nsin)%r(1))*rscale*3.e+16)
-!
-			sum_Lz = sum_Lz + parray(MASS, p)*mscale*2.e30* &
-			(v(2,p)*vscale*1000.*(parray(1,p)-sink(nsin)%r(1))*rscale*3.e+16 - &
-			v(1,p)*vscale*1000.*(parray(2,p)-sink(nsin)%r(2))*rscale*3.e+16)
+			sum_Lx = sum_Lx + parray(MASS, p) * (v(3,p)*parray(2,p) - v(2,p)*parray(3,p) )
+			sum_Ly = sum_Ly + parray(MASS, p) * (v(1,p)*parray(3,p) - v(3,p)*parray(1,p) )
+			sum_Lz = sum_Lz + parray(MASS, p) * (v(2,p)*parray(1,p) - v(1,p)*parray(2,p) )
 		endif
   	enddo
 !
@@ -369,7 +364,7 @@ do nsin=1,1 ! no planet in disc
 !
 !							!!! Rotate disc to lie on z = 0 plane
 							!!! prior to inclination
- cosphi = cos( ( ( acos(cosphi) / (pi / 180.) ) - 90.) * (pi / 180.) )
+ cosphi = cos( ( ( acos(cosphi) / (pi / 180.) ) + 90.) * (pi / 180.) )
  sinphi = sqrt( 1 - cosphi**2 )
 !
 !							!!! Ensure rotation about y-axis 
@@ -596,10 +591,16 @@ if (counter==3) then
  	pradius=sqrt(parray(1,p)**2+parray(2,p)**2) 
 !
 	if ( (rho(p)*rhoscale .gt. rhorestr) .or. (temp(p) .lt. trestr) ) then
+!
+		if ( trho_diagn .eq. 1 ) then
+			write(*,*) "Particle ", p, " with rho = ", rho(p)*rhoscale, " and T = ",temp(p), " restricted"
+			CYCLE
+		endif
+!
 		trho_count = trho_count + 1
 !
 		if (pradius>radius_out+0.5*dr) CYCLE
- 		!if (parray(3,p)>0.5*pradius) CYCLE
+ 		if (parray(3,p)>0.5*pradius) CYCLE
  		do i=1,rbins+1
  			if (pradius>radius(i)-0.5*dr .and.pradius<radius(i)+0.5*dr) then
  		            rparticles(i)=rparticles(i)+1

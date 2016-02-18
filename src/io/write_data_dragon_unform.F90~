@@ -87,7 +87,7 @@ SUBROUTINE write_data_dragon_unform(out_file)
   do p=1,ptot
 
 	if ( (rho(p)*rhoscale .lt. rhorestr) .and. (temp(p) .gt. trestr) ) then
-		write(*,*) "Particle ", p, " with rho = ", rho(p), " and T = ",temp(p), " restricted"
+		write(*,*) "Particle ", p, " with rho = ", rho(p)*rhoscale, " and T = ",temp(p), " restricted"
 		CYCLE
 	endif
 

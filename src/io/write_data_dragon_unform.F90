@@ -86,11 +86,6 @@ SUBROUTINE write_data_dragon_unform(out_file)
   i = 1
   do p=1,ptot
 
-	if ( (rho(p)*rhoscale .lt. rhorestr) .and. (temp(p) .gt. trestr) ) then
-		write(*,*) "Particle ", p, " with rho = ", rho(p)*rhoscale, " and T = ",temp(p), " restricted"
-		CYCLE
-	endif
-
 	if ( (rho(p)*rhoscale .gt. rhorestr) .or. (temp(p) .lt. trestr) ) then
 		rdummy3(1:NDIM,i) = parray(1:NDIM,p)*real(rscale,PR)
 		i = i + 1
